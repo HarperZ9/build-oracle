@@ -448,6 +448,64 @@ class SimpleForecaster:
 
         return z
 
+    # ------------------------------------------------------------------
+    # Persistence
+    # ------------------------------------------------------------------
+
+    def _get_state(self) -> dict:
+        """Return a JSON-serializable dictionary of fitted model state."""
+        return {
+            "model_type": "neural",
+            "lookback": self.lookback,
+            "horizon": self.horizon,
+            "hidden": self.hidden,
+            "layer1_W": self.layer1.W.tolist(),
+            "layer1_b": self.layer1.b.tolist(),
+            "layer2_W": self.layer2.W.tolist(),
+            "layer2_b": self.layer2.b.tolist(),
+            "train_mean": self._train_mean,
+            "train_std": self._train_std,
+            "trained": self._trained,
+        }
+
+    @classmethod
+    def _from_state(cls, state: dict) -> "SimpleForecaster":
+        """Reconstruct a SimpleForecaster from a state dictionary."""
+        if state.get("model_type") != "neural":
+            raise ValueError(
+                f"Expected model_type 'neural', got '{state.get('model_type')}'"
+            )
+        obj = cls(
+            lookback=state["lookback"],
+            horizon=state["horizon"],
+            hidden=state["hidden"],
+        )
+        obj.layer1.W = np.array(state["layer1_W"], dtype=np.float64)
+        obj.layer1.b = np.array(state["layer1_b"], dtype=np.float64)
+        obj.layer2.W = np.array(state["layer2_W"], dtype=np.float64)
+        obj.layer2.b = np.array(state["layer2_b"], dtype=np.float64)
+        obj._train_mean = float(state["train_mean"])
+        obj._train_std = float(state["train_std"])
+        obj._trained = bool(state["trained"])
+        return obj
+
+    def save(self, path: str) -> None:
+        """Save model to disk as JSON."""
+        import json
+
+        state = self._get_state()
+        with open(path, "w") as f:
+            json.dump(state, f)
+
+    @classmethod
+    def load(cls, path: str) -> "SimpleForecaster":
+        """Load a previously saved model from *path*."""
+        import json
+
+        with open(path) as f:
+            state = json.load(f)
+        return cls._from_state(state)
+
     def parameters(self) -> list[np.ndarray]:
         return self.layer1.parameters() + self.layer2.parameters()
 
