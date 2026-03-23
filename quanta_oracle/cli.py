@@ -95,6 +95,82 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
     """Run ARIMA or Prophet forecast and print results."""
     import numpy as np
 
+    # ---- Load from saved model file ------------------------------------
+    if args.load:
+        import json
+
+        print(f"  Loading model from: {args.load}")
+        with open(args.load) as f:
+            state = json.load(f)
+        model_type = state.get("model_type", "")
+
+        if model_type == "arima":
+            from quanta_oracle.arima import ARIMA
+            model = ARIMA._from_state(state)
+            model_name = "arima"
+        elif model_type == "prophet":
+            from quanta_oracle.prophet import Prophet
+            model = Prophet._from_state(state)
+            model_name = "prophet"
+        elif model_type == "neural":
+            from quanta_oracle.neural import SimpleForecaster
+            model = SimpleForecaster._from_state(state)
+            model_name = "neural"
+        else:
+            print(f"  Error: unknown model_type '{model_type}' in saved file.")
+            sys.exit(1)
+
+        horizon = args.horizon
+        print(f"  Model       : {model_name.upper()} (loaded)")
+        print(f"  Horizon     : {horizon} steps")
+        print()
+
+        # For loaded models we generate sample data just for evaluation
+        if args.data == "sample":
+            series = generate_sample_series(n=365)
+            arr = np.array(series, dtype=np.float64)
+            actual = arr[-horizon:]
+        else:
+            actual = None
+
+        if model_name == "neural":
+            series_data = np.array(generate_sample_series(n=365), dtype=np.float64)
+            forecast = model.predict(series_data)
+            forecast = np.asarray(forecast, dtype=np.float64)[:horizon]
+        elif model_name == "prophet":
+            result = model.predict(np.arange(len(arr) - horizon, len(arr), dtype=np.float64))
+            forecast = np.asarray(result["yhat"], dtype=np.float64)[:horizon]
+        else:
+            forecast = model.predict(horizon)
+            forecast = np.asarray(forecast, dtype=np.float64)[:horizon]
+
+        if actual is not None:
+            errors = actual - forecast[:len(actual)]
+            mae = float(np.mean(np.abs(errors)))
+            rmse = float(np.sqrt(np.mean(errors ** 2)))
+            nonzero = actual[actual != 0]
+            if len(nonzero) > 0:
+                mape = float(np.mean(np.abs(errors[actual != 0] / nonzero)) * 100)
+            else:
+                mape = 0.0
+            print("  --- Metrics ---")
+            print(f"  MAE  : {mae:.4f}")
+            print(f"  RMSE : {rmse:.4f}")
+            print(f"  MAPE : {mape:.2f}%")
+            print()
+
+        print("  --- Forecast (first 5 / last 5) ---")
+        fc = forecast.tolist()
+        for i, v in enumerate(fc[:5]):
+            print(f"    t+{i+1:3d}: {v:.4f}")
+        if len(fc) > 10:
+            print(f"    {'...':>8}")
+        for i, v in enumerate(fc[-5:]):
+            idx = len(fc) - 5 + i + 1
+            print(f"    t+{idx:3d}: {v:.4f}")
+        return
+
+    # ---- Normal fit-and-forecast path ----------------------------------
     # Load data
     if args.data == "sample":
         series = generate_sample_series(n=365)
@@ -128,9 +204,12 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
     elif model_name == "prophet":
         try:
             from quanta_oracle.prophet import Prophet
+            t_train = np.arange(len(train), dtype=np.float64)
             model = Prophet()
-            model.fit(train)
-            forecast = model.predict(horizon)
+            model.fit(t_train, train)
+            t_future = np.arange(len(train), len(train) + horizon, dtype=np.float64)
+            result = model.predict(t_future)
+            forecast = result["yhat"]
         except ImportError:
             # Fallback: seasonal naive
             period = 7
@@ -142,6 +221,12 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     forecast = np.asarray(forecast, dtype=np.float64)[:horizon]
+
+    # ---- Optionally save the fitted model ------------------------------
+    if args.save:
+        model.save(args.save)
+        print(f"  Model saved to: {args.save}")
+        print()
 
     # Metrics
     errors = actual - forecast[:len(actual)]
@@ -423,6 +508,10 @@ def main(argv: Optional[list[str]] = None) -> None:
     p_fc.add_argument("--model", default="arima", choices=["arima", "prophet"],
                        help="Forecast model (default: arima)")
     p_fc.add_argument("--horizon", type=int, default=30, help="Forecast horizon (default: 30)")
+    p_fc.add_argument("--save", default=None, metavar="PATH",
+                       help="Save fitted model to PATH after training")
+    p_fc.add_argument("--load", default=None, metavar="PATH",
+                       help="Load a saved model from PATH instead of fitting")
 
     # decompose
     p_dc = sub.add_parser("decompose", help="Decompose time series")

@@ -287,6 +287,79 @@ class Prophet:
             "yhat_upper": yhat + margin,
         }
 
+    # ------------------------------------------------------------------
+    # Persistence
+    # ------------------------------------------------------------------
+
+    def _get_state(self) -> dict:
+        """Return a JSON-serializable dictionary of fitted model state."""
+        if not self._fitted:
+            raise RuntimeError("Model has not been fitted yet")
+        return {
+            "model_type": "prophet",
+            "yearly_seasonality": self.yearly_seasonality,
+            "weekly_seasonality": self.weekly_seasonality,
+            "n_changepoints": self.n_changepoints,
+            "fourier_order": self.fourier_order,
+            "yearly_period": self.yearly_period,
+            "weekly_period": self.weekly_period,
+            "k": self._k,
+            "m": self._m,
+            "changepoints": self._changepoints.tolist(),
+            "deltas": self._deltas.tolist(),
+            "seasonal_coeffs": (
+                self._seasonal_coeffs.tolist()
+                if self._seasonal_coeffs is not None
+                else None
+            ),
+            "residual_std": self._residual_std,
+        }
+
+    @classmethod
+    def _from_state(cls, state: dict) -> "Prophet":
+        """Reconstruct a fitted Prophet model from a state dictionary."""
+        if state.get("model_type") != "prophet":
+            raise ValueError(
+                f"Expected model_type 'prophet', got '{state.get('model_type')}'"
+            )
+        obj = cls(
+            yearly_seasonality=state["yearly_seasonality"],
+            weekly_seasonality=state["weekly_seasonality"],
+            n_changepoints=state["n_changepoints"],
+            fourier_order=state["fourier_order"],
+            yearly_period=state["yearly_period"],
+            weekly_period=state["weekly_period"],
+        )
+        obj._k = float(state["k"])
+        obj._m = float(state["m"])
+        obj._changepoints = np.array(state["changepoints"], dtype=np.float64)
+        obj._deltas = np.array(state["deltas"], dtype=np.float64)
+        obj._seasonal_coeffs = (
+            np.array(state["seasonal_coeffs"], dtype=np.float64)
+            if state["seasonal_coeffs"] is not None
+            else None
+        )
+        obj._residual_std = float(state["residual_std"])
+        obj._fitted = True
+        return obj
+
+    def save(self, path: str) -> None:
+        """Save fitted model to disk as JSON."""
+        import json
+
+        state = self._get_state()
+        with open(path, "w") as f:
+            json.dump(state, f)
+
+    @classmethod
+    def load(cls, path: str) -> "Prophet":
+        """Load a previously saved model from *path*."""
+        import json
+
+        with open(path) as f:
+            state = json.load(f)
+        return cls._from_state(state)
+
     def _make_fourier_features(
         self,
         t: np.ndarray,

@@ -274,6 +274,60 @@ class ARIMA:
         s2 = max(self.sigma2, 1e-300)
         return float(n * np.log(s2) + k * np.log(n))
 
+    # ----- Persistence ---------------------------------------------------
+
+    def _get_state(self) -> dict:
+        """Return a JSON-serializable dictionary of fitted model state."""
+        self._check_fitted()
+        return {
+            "model_type": "arima",
+            "p": self.p,
+            "d": self.d,
+            "q": self.q,
+            "phi": self.phi.tolist() if self.phi is not None else [],
+            "theta": self.theta.tolist() if self.theta is not None else [],
+            "intercept": self.intercept,
+            "sigma2": self.sigma2,
+            "series": self._series.tolist() if self._series is not None else [],
+            "diff_series": self._diff_series.tolist() if self._diff_series is not None else [],
+            "residuals": self._residuals.tolist() if self._residuals is not None else [],
+        }
+
+    @classmethod
+    def _from_state(cls, state: dict) -> "ARIMA":
+        """Reconstruct a fitted ARIMA model from a state dictionary."""
+        if state.get("model_type") != "arima":
+            raise ValueError(
+                f"Expected model_type 'arima', got '{state.get('model_type')}'"
+            )
+        obj = cls(p=state["p"], d=state["d"], q=state["q"])
+        obj.phi = np.array(state["phi"], dtype=np.float64)
+        obj.theta = np.array(state["theta"], dtype=np.float64)
+        obj.intercept = float(state["intercept"])
+        obj.sigma2 = float(state["sigma2"])
+        obj._series = np.array(state["series"], dtype=np.float64)
+        obj._diff_series = np.array(state["diff_series"], dtype=np.float64)
+        obj._residuals = np.array(state["residuals"], dtype=np.float64)
+        obj._fitted = True
+        return obj
+
+    def save(self, path: str) -> None:
+        """Save fitted model to disk as JSON."""
+        import json
+
+        state = self._get_state()
+        with open(path, "w") as f:
+            json.dump(state, f)
+
+    @classmethod
+    def load(cls, path: str) -> "ARIMA":
+        """Load a previously saved model from *path*."""
+        import json
+
+        with open(path) as f:
+            state = json.load(f)
+        return cls._from_state(state)
+
     # ----- Internals ------------------------------------------------------
 
     def _check_fitted(self):
