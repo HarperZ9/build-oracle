@@ -5,6 +5,8 @@ Modules:
     tensor       - N-dimensional tensor operations
     arima        - ARIMA/SARIMA models
     prophet      - Prophet-style decomposition (Fourier + trend + seasonality)
+    ensemble     - Dynamic multi-model ensemble (ARIMA + Prophet + Neural)
+    streaming    - Incremental/streaming forecast updates without full refit
     changepoint  - PELT changepoint detection
     decompose    - Time series decomposition (classical, STL-like)
     features     - Feature engineering (statistical, temporal, frequency)

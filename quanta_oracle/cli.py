@@ -116,6 +116,9 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
             from quanta_oracle.neural import SimpleForecaster
             model = SimpleForecaster._from_state(state)
             model_name = "neural"
+        elif model_type == "ensemble":
+            print("  Note: ensemble models cannot be loaded from file (re-fit required).")
+            sys.exit(1)
         else:
             print(f"  Error: unknown model_type '{model_type}' in saved file.")
             sys.exit(1)
@@ -253,8 +256,22 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
             forecast = np.array([
                 train[-(period - i % period)] for i in range(horizon)
             ])
+    elif model_name == "ensemble":
+        try:
+            from quanta_oracle.ensemble import EnsembleForecaster
+            model = EnsembleForecaster()
+            model.fit(train)
+            forecast = model.predict(horizon)
+            # Print ensemble weights
+            print("  --- Ensemble Weights ---")
+            for name, w in model.weights.items():
+                print(f"    {name:>8s}: {w:.4f}")
+            print()
+        except ImportError:
+            print("  Error: ensemble module not available.")
+            sys.exit(1)
     else:
-        print(f"  Error: unknown model '{model_name}'. Choose arima or prophet.")
+        print(f"  Error: unknown model '{model_name}'. Choose arima, prophet, or ensemble.")
         sys.exit(1)
 
     forecast = np.asarray(forecast, dtype=np.float64)[:horizon]
@@ -542,7 +559,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     # forecast
     p_fc = sub.add_parser("forecast", help="Run a forecast model")
     p_fc.add_argument("--data", default="sample", help="Data source (default: sample)")
-    p_fc.add_argument("--model", default="arima", choices=["arima", "prophet"],
+    p_fc.add_argument("--model", default="arima", choices=["arima", "prophet", "ensemble"],
                        help="Forecast model (default: arima)")
     p_fc.add_argument("--horizon", type=int, default=30, help="Forecast horizon (default: 30)")
     p_fc.add_argument("--save", default=None, metavar="PATH",
