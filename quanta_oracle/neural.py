@@ -15,6 +15,7 @@ import numpy as np
 # Weight initialisation helpers
 # ---------------------------------------------------------------------------
 
+
 def _kaiming_uniform(fan_in: int, fan_out: int) -> np.ndarray:
     """Kaiming (He) uniform initialisation for ReLU networks."""
     limit = math.sqrt(6.0 / fan_in)
@@ -30,6 +31,7 @@ def _xavier_uniform(fan_in: int, fan_out: int) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Linear (Dense) layer
 # ---------------------------------------------------------------------------
+
 
 class Linear:
     """Fully-connected (dense) layer: ``z = x @ W + b``.
@@ -94,6 +96,7 @@ class Linear:
 # Layer Normalization
 # ---------------------------------------------------------------------------
 
+
 class LayerNorm:
     """Layer normalization over the last dimension.
 
@@ -129,6 +132,7 @@ class LayerNorm:
 # ---------------------------------------------------------------------------
 # Activation functions
 # ---------------------------------------------------------------------------
+
 
 class ReLU:
     """Rectified Linear Unit activation."""
@@ -177,6 +181,7 @@ class Tanh:
 # ---------------------------------------------------------------------------
 # LSTM Cell
 # ---------------------------------------------------------------------------
+
 
 class LSTMCell:
     """Single Long Short-Term Memory cell.
@@ -232,10 +237,10 @@ class LSTMCell:
         gates = combined @ self.W + self.b
 
         hs = self.hidden_size
-        f_gate = self._sigmoid.forward(gates[0 * hs: 1 * hs])
-        i_gate = self._sigmoid.forward(gates[1 * hs: 2 * hs])
-        g_gate = np.tanh(gates[2 * hs: 3 * hs])
-        o_gate = self._sigmoid.forward(gates[3 * hs: 4 * hs])
+        f_gate = self._sigmoid.forward(gates[0 * hs : 1 * hs])
+        i_gate = self._sigmoid.forward(gates[1 * hs : 2 * hs])
+        g_gate = np.tanh(gates[2 * hs : 3 * hs])
+        o_gate = self._sigmoid.forward(gates[3 * hs : 4 * hs])
 
         c_next = f_gate * c_prev + i_gate * g_gate
         h_next = o_gate * np.tanh(c_next)
@@ -252,6 +257,7 @@ class LSTMCell:
 # ---------------------------------------------------------------------------
 # Simple MLP Forecaster
 # ---------------------------------------------------------------------------
+
 
 class SimpleForecaster:
     """Two-layer MLP for univariate or multivariate time series forecasting.
@@ -277,8 +283,7 @@ class SimpleForecaster:
         Number of input variables.  1 = univariate (default).
     """
 
-    def __init__(self, lookback: int = 20, horizon: int = 5, hidden: int = 64,
-                 n_vars: int = 1):
+    def __init__(self, lookback: int = 20, horizon: int = 5, hidden: int = 64, n_vars: int = 1):
         self.lookback = lookback
         self.horizon = horizon
         self.hidden = hidden
@@ -353,9 +358,7 @@ class SimpleForecaster:
 
         if multivariate:
             if series.shape[1] != self.n_vars:
-                raise ValueError(
-                    f"Expected {self.n_vars} variables, got {series.shape[1]}"
-                )
+                raise ValueError(f"Expected {self.n_vars} variables, got {series.shape[1]}")
             T = series.shape[0]
             # Target is the first column
             target_col = series[:, 0]
@@ -366,10 +369,7 @@ class SimpleForecaster:
 
         min_len = self.lookback + self.horizon + 1
         if min_len > T:
-            raise ValueError(
-                f"Series length ({T}) must be >= "
-                f"lookback + horizon + 1 ({min_len})"
-            )
+            raise ValueError(f"Series length ({T}) must be >= lookback + horizon + 1 ({min_len})")
 
         # Compute and store normalization statistics (based on target column)
         self._train_mean = float(np.mean(target_col))
@@ -391,10 +391,10 @@ class SimpleForecaster:
         Y = np.zeros((n_windows, self.horizon))
         for i in range(n_windows):
             if multivariate:
-                X[i] = normed[i: i + self.lookback].ravel()
+                X[i] = normed[i : i + self.lookback].ravel()
             else:
-                X[i] = normed[i: i + self.lookback]
-            Y[i] = normed_target[i + self.lookback: i + self.lookback + self.horizon]
+                X[i] = normed[i : i + self.lookback]
+            Y[i] = normed_target[i + self.lookback : i + self.lookback + self.horizon]
 
         # Training loop --------------------------------------------------------
         loss_history: list[float] = []
@@ -411,7 +411,7 @@ class SimpleForecaster:
 
             # MSE loss
             diff = output - Y_shuf
-            loss = float(np.mean(diff ** 2))
+            loss = float(np.mean(diff**2))
             loss_history.append(loss)
 
             # Backward pass ----------------------------------------------------
@@ -468,20 +468,16 @@ class SimpleForecaster:
 
         if multivariate:
             if series.shape[0] < self.lookback:
-                raise ValueError(
-                    f"Series length ({series.shape[0]}) must be >= lookback ({self.lookback})"
-                )
-            window = series[-self.lookback:]  # (lookback, K)
+                raise ValueError(f"Series length ({series.shape[0]}) must be >= lookback ({self.lookback})")
+            window = series[-self.lookback :]  # (lookback, K)
             if self._trained:
                 window = (window - np.mean(series, axis=0)) / (np.std(series, axis=0) + 1e-8)
             window_flat = window.ravel()  # (lookback * K,)
         else:
             series = series.ravel()
             if len(series) < self.lookback:
-                raise ValueError(
-                    f"Series length ({len(series)}) must be >= lookback ({self.lookback})"
-                )
-            window_flat = series[-self.lookback:]
+                raise ValueError(f"Series length ({len(series)}) must be >= lookback ({self.lookback})")
+            window_flat = series[-self.lookback :]
             if self._trained:
                 window_flat = (window_flat - self._train_mean) / self._train_std
 
@@ -518,9 +514,7 @@ class SimpleForecaster:
     def _from_state(cls, state: dict) -> SimpleForecaster:
         """Reconstruct a SimpleForecaster from a state dictionary."""
         if state.get("model_type") != "neural":
-            raise ValueError(
-                f"Expected model_type 'neural', got '{state.get('model_type')}'"
-            )
+            raise ValueError(f"Expected model_type 'neural', got '{state.get('model_type')}'")
         obj = cls(
             lookback=state["lookback"],
             horizon=state["horizon"],
@@ -557,7 +551,4 @@ class SimpleForecaster:
         return self.layer1.parameters() + self.layer2.parameters()
 
     def __repr__(self) -> str:
-        return (
-            f"SimpleForecaster(lookback={self.lookback}, "
-            f"horizon={self.horizon}, hidden={self.hidden})"
-        )
+        return f"SimpleForecaster(lookback={self.lookback}, horizon={self.horizon}, hidden={self.hidden})"

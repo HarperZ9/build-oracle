@@ -27,14 +27,13 @@ from quanta_oracle.prophet import Prophet
 @dataclass
 class StreamConfig:
     """Configuration for streaming forecaster."""
-    window_size: int = 200          # sliding window length
-    refit_interval: int = 50        # full refit every N points
-    min_history: int = 30           # minimum data before first prediction
-    models: list[str] = field(
-        default_factory=lambda: ["arima", "prophet", "neural"]
-    )
-    forecast_horizon: int = 5       # how many steps ahead to predict
-    decay_factor: float = 0.95      # exponential decay for accuracy weighting
+
+    window_size: int = 200  # sliding window length
+    refit_interval: int = 50  # full refit every N points
+    min_history: int = 30  # minimum data before first prediction
+    models: list[str] = field(default_factory=lambda: ["arima", "prophet", "neural"])
+    forecast_horizon: int = 5  # how many steps ahead to predict
+    decay_factor: float = 0.95  # exponential decay for accuracy weighting
     # ARIMA hyperparameters
     arima_p: int = 2
     arima_d: int = 1
@@ -49,13 +48,14 @@ class StreamConfig:
 @dataclass
 class StreamUpdate:
     """Result from processing a new data point."""
+
     timestamp: datetime
     observed: float
-    predicted: float             # what we predicted for this point
-    error: float                 # prediction error
+    predicted: float  # what we predicted for this point
+    error: float  # prediction error
     next_predictions: np.ndarray  # updated forecast for next N steps
-    model_weights: dict          # current model weights
-    confidence: float            # prediction confidence (0-1)
+    model_weights: dict  # current model weights
+    confidence: float  # prediction confidence (0-1)
 
 
 class StreamForecaster:
@@ -83,7 +83,9 @@ class StreamForecaster:
         self._refit_count = 0
 
     def observe(
-        self, value: float, timestamp: datetime = None,
+        self,
+        value: float,
+        timestamp: datetime = None,
     ) -> StreamUpdate | None:
         """
         Process a new observation. Returns StreamUpdate if enough
@@ -94,7 +96,7 @@ class StreamForecaster:
 
         # Trim to sliding window
         if len(self._history) > self.config.window_size:
-            self._history = self._history[-self.config.window_size:]
+            self._history = self._history[-self.config.window_size :]
 
         # Still warming up
         if len(self._history) < self.config.min_history:
@@ -102,8 +104,7 @@ class StreamForecaster:
 
         # Capture what we predicted for this point (before updating)
         predicted_for_this = (
-            self._last_prediction if self._last_prediction is not None
-            else value  # no error on the very first
+            self._last_prediction if self._last_prediction is not None else value  # no error on the very first
         )
         error = abs(value - predicted_for_this)
 
@@ -216,6 +217,7 @@ class StreamForecaster:
                     model = self._models[name]
                     model._series = data.copy()
                     from quanta_oracle.arima import _autocov, _difference, _levinson_durbin
+
                     z = _difference(data, model.d)
                     model._diff_series = z.copy()
                     model.intercept = float(np.mean(z))
@@ -234,6 +236,7 @@ class StreamForecaster:
                         residuals[t] = z_centered[t] - ar_part
                     model._residuals = residuals
                     from quanta_oracle.arima import _estimate_ma
+
                     if model.q > 0:
                         model.theta = _estimate_ma(residuals, model.q)
 
@@ -241,11 +244,7 @@ class StreamForecaster:
                     # Refit trend only, keeping seasonality coefficients
                     model = self._models[name]
                     t = np.arange(len(data), dtype=np.float64)
-                    saved_seasonal = (
-                        model._seasonal_coeffs.copy()
-                        if model._seasonal_coeffs is not None
-                        else None
-                    )
+                    saved_seasonal = model._seasonal_coeffs.copy() if model._seasonal_coeffs is not None else None
                     # Quick trend refit via least-squares on residuals
                     n = len(data)
                     n_cp = len(model._changepoints)
@@ -254,7 +253,9 @@ class StreamForecaster:
                     for j, cp in enumerate(model._changepoints):
                         A_trend[:, 2 + j] = np.maximum(0.0, t - cp)
                     trend_coeffs, _, _, _ = np.linalg.lstsq(
-                        A_trend, data, rcond=None,
+                        A_trend,
+                        data,
+                        rcond=None,
                     )
                     model._m = float(trend_coeffs[0])
                     model._k = float(trend_coeffs[1])
@@ -268,15 +269,9 @@ class StreamForecaster:
                     # One online gradient step on the most recent window
                     model = self._models[name]
                     if len(data) >= model.lookback + model.horizon:
-                        window = data[-(model.lookback + model.horizon):]
-                        x_norm = (
-                            (window[:model.lookback] - model._train_mean)
-                            / model._train_std
-                        )
-                        y_norm = (
-                            (window[model.lookback:] - model._train_mean)
-                            / model._train_std
-                        )
+                        window = data[-(model.lookback + model.horizon) :]
+                        x_norm = (window[: model.lookback] - model._train_mean) / model._train_std
+                        y_norm = (window[model.lookback :] - model._train_mean) / model._train_std
                         x_batch = x_norm.reshape(1, -1)
                         y_batch = y_norm.reshape(1, -1)
 
@@ -321,19 +316,14 @@ class StreamForecaster:
                 [decay ** (n - 1 - i) for i in range(n)],
                 dtype=np.float64,
             )
-            weighted_mae = float(
-                np.average(np.abs(errors), weights=weights)
-            )
+            weighted_mae = float(np.average(np.abs(errors), weights=weights))
             # Inverse MAE as score (lower error -> higher score)
             model_scores[name] = 1.0 / (weighted_mae + 1e-10)
 
         # Normalize to sum to 1
         total = sum(model_scores.values())
         if total > 0:
-            self._weights = {
-                name: score / total
-                for name, score in model_scores.items()
-            }
+            self._weights = {name: score / total for name, score in model_scores.items()}
         else:
             n = len(self._models)
             self._weights = {name: 1.0 / n for name in self._models}
@@ -454,12 +444,5 @@ class StreamForecaster:
     def __repr__(self) -> str:
         if self._fitted:
             models = ", ".join(self._models.keys())
-            return (
-                f"StreamForecaster(history={self.history_length}, "
-                f"models=[{models}], "
-                f"updates={self._update_count})"
-            )
-        return (
-            f"StreamForecaster(warming_up, "
-            f"history={self.history_length}/{self.config.min_history})"
-        )
+            return f"StreamForecaster(history={self.history_length}, models=[{models}], updates={self._update_count})"
+        return f"StreamForecaster(warming_up, history={self.history_length}/{self.config.min_history})"

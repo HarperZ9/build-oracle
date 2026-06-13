@@ -27,6 +27,7 @@ def _to_array(x: ArrayLike) -> np.ndarray:
 # Fourier feature generation
 # ---------------------------------------------------------------------------
 
+
 def _make_fourier_features(
     t: np.ndarray,
     period: float,
@@ -50,6 +51,7 @@ def _make_fourier_features(
 # ---------------------------------------------------------------------------
 # Piecewise linear trend
 # ---------------------------------------------------------------------------
+
 
 def _piecewise_linear(
     t: np.ndarray,
@@ -89,6 +91,7 @@ def _piecewise_linear(
 # Prophet model
 # ---------------------------------------------------------------------------
 
+
 class Prophet:
     """Additive time series model with piecewise-linear trend and Fourier
     seasonality.
@@ -127,8 +130,8 @@ class Prophet:
 
         # Fitted state
         self._fitted = False
-        self._k: float = 0.0                    # base slope
-        self._m: float = 0.0                    # base intercept
+        self._k: float = 0.0  # base slope
+        self._m: float = 0.0  # base intercept
         self._changepoints: np.ndarray = np.array([])
         self._deltas: np.ndarray = np.array([])
         self._seasonal_coeffs: np.ndarray | None = None
@@ -182,10 +185,7 @@ class Prophet:
             if regressors.ndim == 1:
                 regressors = regressors.reshape(-1, 1)
             if regressors.shape[0] != n:
-                raise ValueError(
-                    f"regressors rows ({regressors.shape[0]}) must match "
-                    f"timestamps length ({n})"
-                )
+                raise ValueError(f"regressors rows ({regressors.shape[0]}) must match timestamps length ({n})")
             self._n_regressors = regressors.shape[1]
         else:
             self._n_regressors = 0
@@ -223,19 +223,13 @@ class Prophet:
 
         seasonal_features = []
         if self.yearly_seasonality:
-            seasonal_features.append(
-                _make_fourier_features(t, self.yearly_period, self.fourier_order)
-            )
+            seasonal_features.append(_make_fourier_features(t, self.yearly_period, self.fourier_order))
         if self.weekly_seasonality:
-            seasonal_features.append(
-                _make_fourier_features(t, self.weekly_period, self.fourier_order)
-            )
+            seasonal_features.append(_make_fourier_features(t, self.weekly_period, self.fourier_order))
 
         if seasonal_features:
             X_seasonal = np.hstack(seasonal_features)
-            self._seasonal_coeffs, _, _, _ = np.linalg.lstsq(
-                X_seasonal, detrended, rcond=None
-            )
+            self._seasonal_coeffs, _, _, _ = np.linalg.lstsq(X_seasonal, detrended, rcond=None)
             seasonal_fitted = X_seasonal @ self._seasonal_coeffs
         else:
             self._seasonal_coeffs = None
@@ -244,9 +238,7 @@ class Prophet:
         # --- Step 4: Fit external regressor coefficients ------------------
         if regressors is not None and self._n_regressors > 0:
             residual_for_regressors = y - trend_fitted - seasonal_fitted
-            self._regressor_coeffs, _, _, _ = np.linalg.lstsq(
-                regressors, residual_for_regressors, rcond=None
-            )
+            self._regressor_coeffs, _, _, _ = np.linalg.lstsq(regressors, residual_for_regressors, rcond=None)
             regressor_fitted = regressors @ self._regressor_coeffs
         else:
             self._regressor_coeffs = None
@@ -307,13 +299,9 @@ class Prophet:
         # Seasonality
         seasonal_features = []
         if self.yearly_seasonality:
-            seasonal_features.append(
-                _make_fourier_features(t, self.yearly_period, self.fourier_order)
-            )
+            seasonal_features.append(_make_fourier_features(t, self.yearly_period, self.fourier_order))
         if self.weekly_seasonality:
-            seasonal_features.append(
-                _make_fourier_features(t, self.weekly_period, self.fourier_order)
-            )
+            seasonal_features.append(_make_fourier_features(t, self.weekly_period, self.fourier_order))
 
         if seasonal_features and self._seasonal_coeffs is not None:
             X_seasonal = np.hstack(seasonal_features)
@@ -330,14 +318,10 @@ class Prophet:
                     regressors = regressors.reshape(-1, 1)
                 if regressors.shape[0] != n:
                     raise ValueError(
-                        f"regressors rows ({regressors.shape[0]}) must match "
-                        f"future_timestamps length ({n})"
+                        f"regressors rows ({regressors.shape[0]}) must match future_timestamps length ({n})"
                     )
                 if regressors.shape[1] != self._n_regressors:
-                    raise ValueError(
-                        f"Expected {self._n_regressors} regressor columns, "
-                        f"got {regressors.shape[1]}"
-                    )
+                    raise ValueError(f"Expected {self._n_regressors} regressor columns, got {regressors.shape[1]}")
                 regressor_component = regressors @ self._regressor_coeffs
 
         yhat = trend + seasonal + regressor_component
@@ -372,16 +356,8 @@ class Prophet:
             "m": self._m,
             "changepoints": self._changepoints.tolist(),
             "deltas": self._deltas.tolist(),
-            "seasonal_coeffs": (
-                self._seasonal_coeffs.tolist()
-                if self._seasonal_coeffs is not None
-                else None
-            ),
-            "regressor_coeffs": (
-                self._regressor_coeffs.tolist()
-                if self._regressor_coeffs is not None
-                else None
-            ),
+            "seasonal_coeffs": (self._seasonal_coeffs.tolist() if self._seasonal_coeffs is not None else None),
+            "regressor_coeffs": (self._regressor_coeffs.tolist() if self._regressor_coeffs is not None else None),
             "n_regressors": self._n_regressors,
             "residual_std": self._residual_std,
         }
@@ -390,9 +366,7 @@ class Prophet:
     def _from_state(cls, state: dict) -> Prophet:
         """Reconstruct a fitted Prophet model from a state dictionary."""
         if state.get("model_type") != "prophet":
-            raise ValueError(
-                f"Expected model_type 'prophet', got '{state.get('model_type')}'"
-            )
+            raise ValueError(f"Expected model_type 'prophet', got '{state.get('model_type')}'")
         obj = cls(
             yearly_seasonality=state["yearly_seasonality"],
             weekly_seasonality=state["weekly_seasonality"],
@@ -406,16 +380,10 @@ class Prophet:
         obj._changepoints = np.array(state["changepoints"], dtype=np.float64)
         obj._deltas = np.array(state["deltas"], dtype=np.float64)
         obj._seasonal_coeffs = (
-            np.array(state["seasonal_coeffs"], dtype=np.float64)
-            if state["seasonal_coeffs"] is not None
-            else None
+            np.array(state["seasonal_coeffs"], dtype=np.float64) if state["seasonal_coeffs"] is not None else None
         )
         regressor_coeffs = state.get("regressor_coeffs")
-        obj._regressor_coeffs = (
-            np.array(regressor_coeffs, dtype=np.float64)
-            if regressor_coeffs is not None
-            else None
-        )
+        obj._regressor_coeffs = np.array(regressor_coeffs, dtype=np.float64) if regressor_coeffs is not None else None
         obj._n_regressors = int(state.get("n_regressors", 0))
         obj._residual_std = float(state["residual_std"])
         obj._fitted = True

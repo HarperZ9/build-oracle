@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+
 from quanta_oracle.decompose import (
     classical_decompose,
     seasonal_strength,
@@ -11,6 +12,7 @@ from quanta_oracle.decompose import (
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_seasonal_series(n: int = 120, period: int = 12) -> np.ndarray:
     """Create a series with clear trend + seasonality."""
@@ -35,6 +37,7 @@ def _make_constant(n: int = 60, period: int = 12) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # classical_decompose
 # ---------------------------------------------------------------------------
+
 
 class TestClassicalDecompose:
     def test_output_keys(self):
@@ -71,7 +74,7 @@ class TestClassicalDecompose:
         d = classical_decompose(y, period=12)
         # Take one full period from the middle (away from NaN edges)
         start = 30
-        chunk = d["seasonal"][start: start + 12]
+        chunk = d["seasonal"][start : start + 12]
         assert abs(np.sum(chunk)) < 1e-10
 
     def test_trend_nan_at_edges(self):
@@ -105,6 +108,7 @@ class TestClassicalDecompose:
 # ---------------------------------------------------------------------------
 # Strength measures
 # ---------------------------------------------------------------------------
+
 
 class TestStrengthMeasures:
     def test_trend_strength_high_for_trend(self):

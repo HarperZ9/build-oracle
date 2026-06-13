@@ -4,6 +4,7 @@ import json
 
 import numpy as np
 import pytest
+
 from quanta_oracle.arima import ARIMA
 from quanta_oracle.neural import SimpleForecaster
 from quanta_oracle.prophet import Prophet
@@ -11,6 +12,7 @@ from quanta_oracle.prophet import Prophet
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _sample_series(n: int = 200) -> np.ndarray:
     """Deterministic sample time series for reproducible tests."""
@@ -36,6 +38,7 @@ def tmp_path_file(tmp_path):
 # ---------------------------------------------------------------------------
 # ARIMA persistence tests
 # ---------------------------------------------------------------------------
+
 
 class TestARIMAPersistence:
     def test_save_load_roundtrip(self, sample_series, tmp_path_file):
@@ -92,6 +95,7 @@ class TestARIMAPersistence:
 # Prophet persistence tests
 # ---------------------------------------------------------------------------
 
+
 class TestProphetPersistence:
     def test_save_load_roundtrip(self, sample_series, tmp_path_file):
         """Fit -> save -> load -> predict must produce identical forecasts."""
@@ -144,6 +148,7 @@ class TestProphetPersistence:
 # ---------------------------------------------------------------------------
 # Neural (SimpleForecaster) persistence tests
 # ---------------------------------------------------------------------------
+
 
 class TestNeuralPersistence:
     def test_save_load_roundtrip(self, sample_series, tmp_path_file):
@@ -204,6 +209,7 @@ class TestNeuralPersistence:
 # ---------------------------------------------------------------------------
 # Cross-cutting / error-handling tests
 # ---------------------------------------------------------------------------
+
 
 class TestPersistenceErrors:
     def test_load_nonexistent_file_arima(self):

@@ -4,7 +4,6 @@ Quanta Oracle -- Changepoint Detection Page
 Detect structural breaks in time series with configurable penalties.
 """
 
-
 from PyQt6.QtCore import QPointF, QRectF, Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QColor, QPainter, QPen
 from PyQt6.QtWidgets import (
@@ -29,8 +28,10 @@ from quanta_oracle.gui.app import C, Card, Heading
 # Changepoint Worker Thread
 # =============================================================================
 
+
 class ChangepointWorker(QThread):
     """Run changepoint detection in background thread."""
+
     finished = pyqtSignal(dict)
 
     def __init__(self, series, penalty, min_segment, parent=None):
@@ -46,6 +47,7 @@ class ChangepointWorker(QThread):
 
         try:
             from quanta_oracle.changepoint import pelt as pelt_detect
+
             cps = pelt_detect(arr, penalty=self._penalty, min_segment=self._min_segment)
         except ImportError:
             # Fallback: CUSUM-like detection
@@ -60,42 +62,47 @@ class ChangepointWorker(QThread):
                     cps.append(i)
                     cumsum = 0.0
                     last_cp = i
-                    mean_val = float(np.mean(arr[i:min(i + 30, len(arr))]))
+                    mean_val = float(np.mean(arr[i : min(i + 30, len(arr))]))
 
         # Compute stats for each changepoint
         cp_data = []
         for cp in cps:
-            left_seg = arr[max(0, cp - 20):cp]
-            right_seg = arr[cp:min(len(arr), cp + 20)]
+            left_seg = arr[max(0, cp - 20) : cp]
+            right_seg = arr[cp : min(len(arr), cp + 20)]
             left_mean = float(np.mean(left_seg)) if len(left_seg) > 0 else 0.0
             right_mean = float(np.mean(right_seg)) if len(right_seg) > 0 else 0.0
             shift = abs(right_mean - left_mean)
             confidence = min(1.0, shift / (float(np.std(arr)) + 1e-8))
-            cp_data.append({
-                "index": cp,
-                "confidence": confidence,
-                "left_mean": left_mean,
-                "right_mean": right_mean,
-            })
+            cp_data.append(
+                {
+                    "index": cp,
+                    "confidence": confidence,
+                    "left_mean": left_mean,
+                    "right_mean": right_mean,
+                }
+            )
 
         # Compute segment means
         boundaries = [0] + cps + [len(arr)]
         segment_means = []
         for i in range(len(boundaries) - 1):
-            seg = arr[boundaries[i]:boundaries[i + 1]]
+            seg = arr[boundaries[i] : boundaries[i + 1]]
             segment_means.append(float(np.mean(seg)))
 
-        self.finished.emit({
-            "series": arr.tolist(),
-            "changepoints": cp_data,
-            "segment_boundaries": boundaries,
-            "segment_means": segment_means,
-        })
+        self.finished.emit(
+            {
+                "series": arr.tolist(),
+                "changepoints": cp_data,
+                "segment_boundaries": boundaries,
+                "segment_means": segment_means,
+            }
+        )
 
 
 # =============================================================================
 # Changepoint Chart Widget
 # =============================================================================
+
 
 class ChangepointChart(QWidget):
     """Chart showing time series with vertical lines at changepoints."""
@@ -122,8 +129,7 @@ class ChangepointChart(QWidget):
             p = QPainter(self)
             p.setRenderHint(QPainter.RenderHint.Antialiasing)
             p.setPen(QColor(C.TEXT3))
-            p.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter,
-                       "Run detection to see results")
+            p.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "Run detection to see results")
             p.end()
             return
 
@@ -160,9 +166,11 @@ class ChangepointChart(QWidget):
             p.drawLine(QPointF(margin_l, gy), QPointF(w - margin_r, gy))
             val = y_max - (i / 5.0) * y_range
             p.setPen(QColor(C.TEXT3))
-            p.drawText(QRectF(0, gy - 8, margin_l - 6, 16),
-                       Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
-                       f"{val:.1f}")
+            p.drawText(
+                QRectF(0, gy - 8, margin_l - 6, 16),
+                Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
+                f"{val:.1f}",
+            )
             p.setPen(grid_pen)
 
         # Segment mean lines (horizontal colored lines for each segment)
@@ -202,14 +210,11 @@ class ChangepointChart(QWidget):
 
             # Label
             p.setPen(QColor(C.RED))
-            p.drawText(QRectF(sx - 15, margin_t - 16, 30, 14),
-                       Qt.AlignmentFlag.AlignCenter,
-                       str(idx))
+            p.drawText(QRectF(sx - 15, margin_t - 16, 30, 14), Qt.AlignmentFlag.AlignCenter, str(idx))
 
         # X-axis
         p.setPen(QColor(C.TEXT2))
-        p.drawText(QRectF(margin_l, h - 18, plot_w, 16),
-                   Qt.AlignmentFlag.AlignCenter, "Time Index")
+        p.drawText(QRectF(margin_l, h - 18, plot_w, 16), Qt.AlignmentFlag.AlignCenter, "Time Index")
 
         # Legend
         lx = margin_l + 10
@@ -236,6 +241,7 @@ class ChangepointChart(QWidget):
 # =============================================================================
 # Changepoint Page
 # =============================================================================
+
 
 class ChangepointPage(QWidget):
     """Changepoint detection configuration, visualization, and results table."""
@@ -304,9 +310,7 @@ class ChangepointPage(QWidget):
         table_layout.setContentsMargins(12, 12, 12, 12)
 
         self._table = QTableWidget(0, 4)
-        self._table.setHorizontalHeaderLabels([
-            "Index", "Confidence", "Left Mean", "Right Mean"
-        ])
+        self._table.setHorizontalHeaderLabels(["Index", "Confidence", "Left Mean", "Right Mean"])
         self._table.horizontalHeader().setStretchLastSection(True)
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self._table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -361,6 +365,7 @@ class ChangepointPage(QWidget):
         self._run_btn.setText("Detecting...")
 
         from quanta_oracle.cli import generate_sample_series
+
         series = generate_sample_series(n=365, changepoints=3)
 
         penalty = self._penalty_combo.currentText().lower()
@@ -400,6 +405,4 @@ class ChangepointPage(QWidget):
 
         if self._main_window:
             count = len(cps)
-            self._main_window.show_toast(
-                f"Detected {count} changepoint{'s' if count != 1 else ''}", "success"
-            )
+            self._main_window.show_toast(f"Detected {count} changepoint{'s' if count != 1 else ''}", "success")

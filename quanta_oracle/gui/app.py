@@ -51,6 +51,7 @@ APP_ORG = "Quanta Universe"
 # Application Icon -- crystal ball with prediction line
 # =============================================================================
 
+
 def make_app_icon() -> QIcon:
     """
     Create the application icon programmatically.
@@ -95,6 +96,7 @@ def make_app_icon() -> QIcon:
 
         # Wavy rising line
         import math
+
         points = []
         num_pts = 8
         for i in range(num_pts):
@@ -139,6 +141,7 @@ def make_app_icon() -> QIcon:
 # =============================================================================
 # Placeholder Page (fallback for unbuilt pages)
 # =============================================================================
+
 
 class PlaceholderPage(QWidget):
     def __init__(self, title: str, parent=None):
@@ -215,36 +218,23 @@ class QuantaOracleWindow(QMainWindow):
 
         # File
         file_menu = mb.addMenu("&File")
-        file_menu.addAction(
-            QAction("&Load CSV...", self, shortcut="Ctrl+O",
-                    triggered=self._load_csv)
-        )
+        file_menu.addAction(QAction("&Load CSV...", self, shortcut="Ctrl+O", triggered=self._load_csv))
         file_menu.addSeparator()
-        file_menu.addAction(
-            QAction("E&xit", self, shortcut="Alt+F4",
-                    triggered=self.close)
-        )
+        file_menu.addAction(QAction("E&xit", self, shortcut="Alt+F4", triggered=self.close))
 
         # View -- page navigation shortcuts
         view = mb.addMenu("&View")
         for i, (name, sc) in enumerate(zip(PAGE_MENU_NAMES, PAGE_SHORTCUTS)):
             act = QAction(name, self)
             act.setShortcut(QKeySequence(sc))
-            act.triggered.connect(
-                lambda checked, idx=i: self._shortcut_switch_page(idx)
-            )
+            act.triggered.connect(lambda checked, idx=i: self._shortcut_switch_page(idx))
             view.addAction(act)
         view.addSeparator()
-        view.addAction(
-            QAction("&Refresh", self, shortcut="F5",
-                    triggered=self._refresh_current)
-        )
+        view.addAction(QAction("&Refresh", self, shortcut="F5", triggered=self._refresh_current))
 
         # Help
         help_menu = mb.addMenu("&Help")
-        help_menu.addAction(
-            QAction("&About", self, triggered=self._about)
-        )
+        help_menu.addAction(QAction("&About", self, triggered=self._about))
 
     # --- Central Widget ---
 
@@ -266,6 +256,7 @@ class QuantaOracleWindow(QMainWindow):
         # Page 0: Dashboard
         try:
             from quanta_oracle.gui.pages.dashboard import DashboardPage
+
             self.stack.addWidget(DashboardPage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
             logger.warning("Failed to load DashboardPage: %s", e)
@@ -274,6 +265,7 @@ class QuantaOracleWindow(QMainWindow):
         # Page 1: Forecast
         try:
             from quanta_oracle.gui.pages.forecast_page import ForecastPage
+
             self.stack.addWidget(ForecastPage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
             logger.warning("Failed to load ForecastPage: %s", e)
@@ -282,6 +274,7 @@ class QuantaOracleWindow(QMainWindow):
         # Page 2: Decompose
         try:
             from quanta_oracle.gui.pages.decompose_page import DecomposePage
+
             self.stack.addWidget(DecomposePage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
             logger.warning("Failed to load DecomposePage: %s", e)
@@ -290,6 +283,7 @@ class QuantaOracleWindow(QMainWindow):
         # Page 3: Changepoints
         try:
             from quanta_oracle.gui.pages.changepoint_page import ChangepointPage
+
             self.stack.addWidget(ChangepointPage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
             logger.warning("Failed to load ChangepointPage: %s", e)
@@ -298,6 +292,7 @@ class QuantaOracleWindow(QMainWindow):
         # Page 4: Settings
         try:
             from quanta_oracle.gui.pages.settings_page import SettingsPage
+
             self.stack.addWidget(SettingsPage())
         except (ImportError, AttributeError, TypeError) as e:
             logger.warning("Failed to load SettingsPage: %s", e)
@@ -354,30 +349,28 @@ class QuantaOracleWindow(QMainWindow):
     # --- Actions ---
 
     def _load_csv(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Load CSV Data", "",
-            "CSV Files (*.csv);;All Files (*)"
-        )
+        path, _ = QFileDialog.getOpenFileName(self, "Load CSV Data", "", "CSV Files (*.csv);;All Files (*)")
         if path:
             self._status.setText(f"Loaded: {Path(path).name}")
             self.show_toast(f"Loaded {Path(path).name}", "success")
 
     def _refresh_current(self):
         page = self.stack.currentWidget()
-        if hasattr(page, 'refresh'):
+        if hasattr(page, "refresh"):
             page.refresh()
         self._status.setText("Refreshed")
 
     def _about(self):
         QMessageBox.about(
-            self, f"About {APP_NAME}",
+            self,
+            f"About {APP_NAME}",
             f"<h2>{APP_NAME}</h2>"
             f"<p>Version {APP_VERSION}</p>"
             f"<p>Professional time series forecasting workbench for<br>"
             f"ARIMA, Prophet-style models, changepoint detection,<br>"
             f"and series decomposition.</p>"
             f"<p>Models: ARIMA, Prophet, Neural Networks</p>"
-            f"<p>&copy; 2022-2026 Zain Dana Harper</p>"
+            f"<p>&copy; 2022-2026 Zain Dana Harper</p>",
         )
 
     # --- Geometry Persistence ---
@@ -398,4 +391,5 @@ class QuantaOracleWindow(QMainWindow):
 
 if __name__ == "__main__":
     from quanta_oracle.gui import launch
+
     sys.exit(launch())

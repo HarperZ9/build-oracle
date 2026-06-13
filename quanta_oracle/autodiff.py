@@ -85,7 +85,7 @@ class Dual:
         # Quotient rule: (f/g)' = (f'g - fg') / g^2
         return Dual(
             self.value / other.value,
-            (self.deriv * other.value - self.value * other.deriv) / (other.value ** 2),
+            (self.deriv * other.value - self.value * other.deriv) / (other.value**2),
         )
 
     def __rtruediv__(self, other: Numeric) -> Dual:
@@ -96,12 +96,9 @@ class Dual:
         other = _as_dual(other)
         # f(x)^g(x) = exp(g * ln(f))
         # d/dx = f^g * (g' * ln(f) + g * f' / f)
-        val = self.value ** other.value
+        val = self.value**other.value
         if self.value > 0:
-            deriv = val * (
-                other.deriv * math.log(self.value)
-                + other.value * self.deriv / self.value
-            )
+            deriv = val * (other.deriv * math.log(self.value) + other.value * self.deriv / self.value)
         elif self.value == 0:
             deriv = 0.0
         else:
@@ -220,6 +217,7 @@ class Dual:
 # Helper
 # ---------------------------------------------------------------------------
 
+
 def _as_dual(x: Numeric) -> Dual:
     if isinstance(x, Dual):
         return x
@@ -229,6 +227,7 @@ def _as_dual(x: Numeric) -> Dual:
 # ---------------------------------------------------------------------------
 # Gradient computation
 # ---------------------------------------------------------------------------
+
 
 def gradient(fn: Callable, x: np.ndarray) -> np.ndarray:
     """Compute the gradient of *fn* at point *x* using forward-mode AD.

@@ -16,6 +16,7 @@ import pytest
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_var_data(T: int = 200, K: int = 2, seed: int = 42) -> np.ndarray:
     """Generate a synthetic VAR(1)-like multivariate series."""
     rng = np.random.default_rng(seed)
@@ -42,6 +43,7 @@ def _make_prophet_data(n: int = 200, seed: int = 42):
 # ===================================================================
 # VAR model tests
 # ===================================================================
+
 
 class TestVARFit:
     def test_fit_2var(self):
@@ -164,6 +166,7 @@ class TestVARPersistence:
 # Prophet with regressors
 # ===================================================================
 
+
 class TestProphetRegressors:
     def test_fit_with_regressors(self):
         """Prophet fits when regressors are provided."""
@@ -222,9 +225,7 @@ class TestProphetRegressors:
             loaded = Prophet.load(path)
             assert loaded._n_regressors == 1
             assert loaded._regressor_coeffs is not None
-            np.testing.assert_allclose(
-                loaded._regressor_coeffs, model._regressor_coeffs
-            )
+            np.testing.assert_allclose(loaded._regressor_coeffs, model._regressor_coeffs)
         finally:
             os.unlink(path)
 
@@ -232,6 +233,7 @@ class TestProphetRegressors:
 # ===================================================================
 # Neural with multivariate input
 # ===================================================================
+
 
 class TestNeuralMultivariate:
     def test_train_2d_input(self):

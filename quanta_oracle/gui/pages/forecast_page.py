@@ -5,7 +5,6 @@ Data source selection, model configuration, forecast execution,
 results display with QPainter chart.
 """
 
-
 from PyQt6.QtCore import QPointF, QRectF, Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QColor, QPainter, QPen, QPolygonF
 from PyQt6.QtWidgets import (
@@ -28,8 +27,10 @@ from quanta_oracle.gui.app import C, Card, Heading, Stat
 # Forecast Worker Thread
 # =============================================================================
 
+
 class ForecastWorker(QThread):
     """Run forecast in background thread."""
+
     finished = pyqtSignal(dict)
 
     def __init__(self, series, model_name, horizon, parent=None):
@@ -42,12 +43,13 @@ class ForecastWorker(QThread):
         import numpy as np
 
         arr = np.array(self._series, dtype=np.float64)
-        train = arr[:-self._horizon] if self._horizon < len(arr) else arr
-        actual = arr[-self._horizon:] if self._horizon < len(arr) else np.array([])
+        train = arr[: -self._horizon] if self._horizon < len(arr) else arr
+        actual = arr[-self._horizon :] if self._horizon < len(arr) else np.array([])
 
         if self._model_name == "arima":
             try:
                 from quanta_oracle.arima import ARIMA
+
                 model = ARIMA(p=2, d=1, q=2)
                 model.fit(train)
                 forecast = model.predict(self._horizon)
@@ -59,22 +61,21 @@ class ForecastWorker(QThread):
         else:  # prophet
             try:
                 from quanta_oracle.prophet import Prophet
+
                 model = Prophet()
                 model.fit(train)
                 forecast = model.predict(self._horizon)
             except ImportError:
                 period = 7
-                forecast = np.array([
-                    train[-(period - i % period)] for i in range(self._horizon)
-                ])
+                forecast = np.array([train[-(period - i % period)] for i in range(self._horizon)])
 
-        forecast = np.asarray(forecast, dtype=np.float64)[:self._horizon]
+        forecast = np.asarray(forecast, dtype=np.float64)[: self._horizon]
 
         # Confidence interval (simple +/- 1.96 * residual std)
         if len(actual) > 0 and len(forecast) >= len(actual):
-            errors = actual - forecast[:len(actual)]
+            errors = actual - forecast[: len(actual)]
             mae = float(np.mean(np.abs(errors)))
-            rmse = float(np.sqrt(np.mean(errors ** 2)))
+            rmse = float(np.sqrt(np.mean(errors**2)))
             nonzero = actual[actual != 0]
             if len(nonzero) > 0:
                 mape = float(np.mean(np.abs(errors[actual != 0] / nonzero)) * 100)
@@ -106,6 +107,7 @@ class ForecastWorker(QThread):
 # =============================================================================
 # Forecast Chart Widget
 # =============================================================================
+
 
 class ForecastChart(QWidget):
     """Custom QPainter chart showing historical + forecast data."""
@@ -178,9 +180,11 @@ class ForecastChart(QWidget):
             # Y-axis label
             val = y_max - (i / num_grid) * y_range
             p.setPen(QColor(C.TEXT3))
-            p.drawText(QRectF(0, gy - 8, margin_l - 6, 16),
-                       Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
-                       f"{val:.1f}")
+            p.drawText(
+                QRectF(0, gy - 8, margin_l - 6, 16),
+                Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
+                f"{val:.1f}",
+            )
             p.setPen(grid_pen)
 
         # X-axis labels
@@ -188,13 +192,11 @@ class ForecastChart(QWidget):
         x_labels = [0, total_pts // 4, total_pts // 2, 3 * total_pts // 4, total_pts - 1]
         for idx in x_labels:
             sx = margin_l + (idx / (total_pts - 1)) * plot_w
-            p.drawText(QRectF(sx - 20, h - margin_b + 5, 40, 20),
-                       Qt.AlignmentFlag.AlignCenter, str(idx))
+            p.drawText(QRectF(sx - 20, h - margin_b + 5, 40, 20), Qt.AlignmentFlag.AlignCenter, str(idx))
 
         # Axis labels
         p.setPen(QColor(C.TEXT2))
-        p.drawText(QRectF(margin_l, h - 18, plot_w, 16),
-                   Qt.AlignmentFlag.AlignCenter, "Time Index")
+        p.drawText(QRectF(margin_l, h - 18, plot_w, 16), Qt.AlignmentFlag.AlignCenter, "Time Index")
 
         # Vertical line at forecast boundary
         boundary_x = margin_l + (len(self._train) / (total_pts - 1)) * plot_w
@@ -227,8 +229,7 @@ class ForecastChart(QWidget):
         # Draw only a tail of the history for clarity
         display_start = max(0, len(self._train) - 120)
         for i in range(display_start, len(self._train) - 1):
-            p.drawLine(to_screen(i, self._train[i]),
-                       to_screen(i + 1, self._train[i + 1]))
+            p.drawLine(to_screen(i, self._train[i]), to_screen(i + 1, self._train[i + 1]))
 
         # Forecast -- dashed accent line
         fc_pen = QPen(QColor(C.GREEN), 2, Qt.PenStyle.DashLine)
@@ -238,16 +239,10 @@ class ForecastChart(QWidget):
 
         # Connect last historical point to first forecast point
         if self._train and self._forecast:
-            p.drawLine(
-                to_screen(len(self._train) - 1, self._train[-1]),
-                to_screen(start_idx, self._forecast[0])
-            )
+            p.drawLine(to_screen(len(self._train) - 1, self._train[-1]), to_screen(start_idx, self._forecast[0]))
 
         for i in range(len(self._forecast) - 1):
-            p.drawLine(
-                to_screen(start_idx + i, self._forecast[i]),
-                to_screen(start_idx + i + 1, self._forecast[i + 1])
-            )
+            p.drawLine(to_screen(start_idx + i, self._forecast[i]), to_screen(start_idx + i + 1, self._forecast[i + 1]))
 
         # Legend
         legend_x = margin_l + 10
@@ -277,6 +272,7 @@ class ForecastChart(QWidget):
 # =============================================================================
 # Forecast Page
 # =============================================================================
+
 
 class ForecastPage(QWidget):
     """Forecast configuration, execution, and visualization."""
@@ -377,13 +373,11 @@ class ForecastPage(QWidget):
 
     def _on_data_changed(self, index):
         if index == 1:
-            path, _ = QFileDialog.getOpenFileName(
-                self, "Load CSV Data", "",
-                "CSV Files (*.csv);;All Files (*)"
-            )
+            path, _ = QFileDialog.getOpenFileName(self, "Load CSV Data", "", "CSV Files (*.csv);;All Files (*)")
             if path:
                 self._csv_path = path
                 from pathlib import Path
+
                 self._data_label.setText(f"File: {Path(path).name}")
             else:
                 self._data_combo.setCurrentIndex(0)
@@ -400,6 +394,7 @@ class ForecastPage(QWidget):
         if self._csv_path:
             try:
                 import numpy as np
+
                 data = np.loadtxt(self._csv_path, delimiter=",", usecols=-1, skiprows=1)
                 series = data.tolist()
             except Exception as e:
@@ -410,6 +405,7 @@ class ForecastPage(QWidget):
                 return
         else:
             from quanta_oracle.cli import generate_sample_series
+
             series = generate_sample_series(n=365)
 
         model_name = self._model_combo.currentText().lower()

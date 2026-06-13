@@ -30,11 +30,11 @@ class VAR:
 
         # Fitted state
         self._fitted = False
-        self._k: int = 0                              # number of variables
+        self._k: int = 0  # number of variables
         self._coefficients: np.ndarray | None = None  # (Kp+1, K) with intercept
         self._residuals: np.ndarray | None = None
-        self._sigma: np.ndarray | None = None       # residual covariance
-        self._history: np.ndarray | None = None      # last p rows for prediction
+        self._sigma: np.ndarray | None = None  # residual covariance
+        self._history: np.ndarray | None = None  # last p rows for prediction
 
     # ------------------------------------------------------------------
     # Fitting
@@ -58,9 +58,7 @@ class VAR:
             raise ValueError("data must be a 2-D array of shape (T, K)")
         T, K = data.shape
         if self.p + 1 > T:
-            raise ValueError(
-                f"Need at least p+1={self.p + 1} observations, got {T}"
-            )
+            raise ValueError(f"Need at least p+1={self.p + 1} observations, got {T}")
 
         self._k = K
 
@@ -77,7 +75,7 @@ class VAR:
             Y[i] = data[t]
             for lag in range(self.p):
                 start_col = lag * K
-                Z[i, start_col: start_col + K] = data[t - lag - 1]
+                Z[i, start_col : start_col + K] = data[t - lag - 1]
             # The last column is already 1 (intercept)
 
         # OLS:  coefficients = (Z'Z)^{-1} Z'Y
@@ -93,7 +91,7 @@ class VAR:
         self._sigma = (self._residuals.T @ self._residuals) / n_obs
 
         # Store the last p rows for prediction
-        self._history = data[-self.p:].copy()
+        self._history = data[-self.p :].copy()
         self._fitted = True
 
     # ------------------------------------------------------------------
@@ -129,7 +127,7 @@ class VAR:
             z = np.ones(K * p + 1, dtype=np.float64)
             for lag in range(p):
                 start_col = lag * K
-                z[start_col: start_col + K] = extended[t - lag - 1]
+                z[start_col : start_col + K] = extended[t - lag - 1]
             extended[t] = z @ coeffs
 
         return extended[p:]
@@ -173,9 +171,7 @@ class VAR:
     def _from_state(cls, state: dict) -> VAR:
         """Reconstruct a fitted VAR model from a state dictionary."""
         if state.get("model_type") != "var":
-            raise ValueError(
-                f"Expected model_type 'var', got '{state.get('model_type')}'"
-            )
+            raise ValueError(f"Expected model_type 'var', got '{state.get('model_type')}'")
         obj = cls(p=state["p"])
         obj._k = int(state["k"])
         obj._coefficients = np.array(state["coefficients"], dtype=np.float64)

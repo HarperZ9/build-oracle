@@ -19,6 +19,7 @@ ArrayLike = Sequence[float] | np.ndarray
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _to_array(series: ArrayLike) -> np.ndarray:
     a = np.asarray(series, dtype=np.float64)
     if a.ndim != 1:
@@ -119,6 +120,7 @@ def _estimate_ma(residuals: np.ndarray, q: int) -> np.ndarray:
 # ARIMA class
 # ---------------------------------------------------------------------------
 
+
 class ARIMA:
     """ARIMA(p, d, q) time series model.
 
@@ -140,11 +142,11 @@ class ARIMA:
         self.q = q
 
         # Fitted parameters (populated by .fit())
-        self.phi: np.ndarray | None = None       # AR coefficients
-        self.theta: np.ndarray | None = None      # MA coefficients
+        self.phi: np.ndarray | None = None  # AR coefficients
+        self.theta: np.ndarray | None = None  # MA coefficients
         self.intercept: float = 0.0
-        self.sigma2: float = 0.0                     # residual variance
-        self._series: np.ndarray | None = None    # original series
+        self.sigma2: float = 0.0  # residual variance
+        self._series: np.ndarray | None = None  # original series
         self._diff_series: np.ndarray | None = None
         self._residuals: np.ndarray | None = None
         self._fitted = False
@@ -166,9 +168,7 @@ class ARIMA:
         # Step 1 — differencing
         z = _difference(y, self.d)
         if len(z) < max(self.p, self.q) + 1:
-            raise ValueError(
-                "Series too short after differencing for the chosen orders"
-            )
+            raise ValueError("Series too short after differencing for the chosen orders")
         self._diff_series = z.copy()
         self.intercept = float(np.mean(z))
         z_centered = z - self.intercept
@@ -297,9 +297,7 @@ class ARIMA:
     def _from_state(cls, state: dict) -> ARIMA:
         """Reconstruct a fitted ARIMA model from a state dictionary."""
         if state.get("model_type") != "arima":
-            raise ValueError(
-                f"Expected model_type 'arima', got '{state.get('model_type')}'"
-            )
+            raise ValueError(f"Expected model_type 'arima', got '{state.get('model_type')}'")
         obj = cls(p=state["p"], d=state["d"], q=state["q"])
         obj.phi = np.array(state["phi"], dtype=np.float64)
         obj.theta = np.array(state["theta"], dtype=np.float64)
@@ -342,6 +340,7 @@ class ARIMA:
 # Undifferencing helper
 # ---------------------------------------------------------------------------
 
+
 def _undo_diff_multi(
     forecasts: np.ndarray,
     original: np.ndarray,
@@ -369,6 +368,7 @@ def _undo_diff_multi(
 # ---------------------------------------------------------------------------
 # auto_arima
 # ---------------------------------------------------------------------------
+
 
 def auto_arima(
     series: ArrayLike,

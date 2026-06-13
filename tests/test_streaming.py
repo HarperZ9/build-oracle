@@ -1,11 +1,13 @@
 """Tests for quanta_oracle.streaming."""
 
 import numpy as np
+
 from quanta_oracle.streaming import StreamConfig, StreamForecaster, StreamUpdate
 
 # ---------------------------------------------------------------------------
 # Helpers -- synthetic data generators
 # ---------------------------------------------------------------------------
+
 
 def _sine_stream(n: int = 200, period: float = 20.0, seed: int = 42) -> np.ndarray:
     """Sine wave with light noise."""
@@ -41,6 +43,7 @@ def _fast_config(**overrides) -> StreamConfig:
 # StreamConfig tests
 # ---------------------------------------------------------------------------
 
+
 class TestStreamConfig:
     def test_defaults(self):
         cfg = StreamConfig()
@@ -55,7 +58,9 @@ class TestStreamConfig:
 
     def test_custom_config(self):
         cfg = StreamConfig(
-            window_size=100, min_history=10, models=["arima"],
+            window_size=100,
+            min_history=10,
+            models=["arima"],
         )
         assert cfg.window_size == 100
         assert cfg.min_history == 10
@@ -66,6 +71,7 @@ class TestStreamConfig:
 # Warm-up period tests
 # ---------------------------------------------------------------------------
 
+
 class TestWarmUp:
     def test_returns_none_during_warmup(self):
         cfg = _fast_config(min_history=20)
@@ -75,9 +81,7 @@ class TestWarmUp:
         # First 19 points should return None
         for i in range(19):
             result = sf.observe(data[i])
-            assert result is None, (
-                f"Expected None at index {i}, got {type(result)}"
-            )
+            assert result is None, f"Expected None at index {i}, got {type(result)}"
 
     def test_history_grows_during_warmup(self):
         cfg = _fast_config(min_history=20)
@@ -102,6 +106,7 @@ class TestWarmUp:
 # ---------------------------------------------------------------------------
 # First prediction after warm-up
 # ---------------------------------------------------------------------------
+
 
 class TestFirstPrediction:
     def test_first_update_returns_stream_update(self):
@@ -169,6 +174,7 @@ class TestFirstPrediction:
 # Continuous stream processing
 # ---------------------------------------------------------------------------
 
+
 class TestContinuousStream:
     def test_100_point_sine_all_updates_valid(self):
         """Process 100 points of a sine wave; all post-warmup updates valid."""
@@ -216,6 +222,7 @@ class TestContinuousStream:
 # Accuracy improvement over time
 # ---------------------------------------------------------------------------
 
+
 class TestAccuracyImprovement:
     def test_later_errors_not_worse_than_initial(self):
         """Errors in the second half should not be dramatically worse
@@ -231,25 +238,25 @@ class TestAccuracyImprovement:
                 errors.append(result.error)
 
         if len(errors) > 20:
-            first_half = errors[:len(errors) // 2]
-            second_half = errors[len(errors) // 2:]
+            first_half = errors[: len(errors) // 2]
+            second_half = errors[len(errors) // 2 :]
             avg_first = np.mean(first_half)
             avg_second = np.mean(second_half)
             # Second half should not be 5x worse than first
-            assert avg_second < avg_first * 5.0, (
-                f"Second half error {avg_second:.4f} >> "
-                f"first half {avg_first:.4f}"
-            )
+            assert avg_second < avg_first * 5.0, f"Second half error {avg_second:.4f} >> first half {avg_first:.4f}"
 
 
 # ---------------------------------------------------------------------------
 # Refit triggers
 # ---------------------------------------------------------------------------
 
+
 class TestRefit:
     def test_refit_triggers_at_interval(self):
         cfg = _fast_config(
-            min_history=20, refit_interval=25, models=["arima"],
+            min_history=20,
+            refit_interval=25,
+            models=["arima"],
         )
         sf = StreamForecaster(cfg)
         data = _sine_stream(100)
@@ -277,6 +284,7 @@ class TestRefit:
 # ---------------------------------------------------------------------------
 # Weight updates
 # ---------------------------------------------------------------------------
+
 
 class TestWeightUpdates:
     def test_weights_sum_to_one(self):
@@ -339,6 +347,7 @@ class TestWeightUpdates:
 # Reset
 # ---------------------------------------------------------------------------
 
+
 class TestReset:
     def test_reset_clears_state(self):
         cfg = _fast_config(min_history=20)
@@ -387,6 +396,7 @@ class TestReset:
 # ---------------------------------------------------------------------------
 # Different configurations
 # ---------------------------------------------------------------------------
+
 
 class TestDifferentConfigs:
     def test_arima_only(self):
@@ -459,7 +469,9 @@ class TestDifferentConfigs:
 
     def test_small_window_size(self):
         cfg = _fast_config(
-            window_size=30, min_history=15, models=["arima"],
+            window_size=30,
+            min_history=15,
+            models=["arima"],
         )
         sf = StreamForecaster(cfg)
         data = _sine_stream(60)
@@ -471,7 +483,9 @@ class TestDifferentConfigs:
 
     def test_large_forecast_horizon(self):
         cfg = _fast_config(
-            min_history=20, forecast_horizon=20, models=["arima"],
+            min_history=20,
+            forecast_horizon=20,
+            models=["arima"],
         )
         sf = StreamForecaster(cfg)
         data = _sine_stream(50)
@@ -503,6 +517,7 @@ class TestDifferentConfigs:
 # ---------------------------------------------------------------------------
 # Repr
 # ---------------------------------------------------------------------------
+
 
 class TestRepr:
     def test_unfitted_repr(self):

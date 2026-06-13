@@ -15,4 +15,5 @@ Modules:
     metrics      - Forecast evaluation (MAE, RMSE, MAPE, MASE)
     optimize     - Bayesian optimization with Gaussian Processes
 """
+
 __version__ = "1.0.0"

@@ -2,11 +2,13 @@
 
 import numpy as np
 import pytest
+
 from quanta_oracle.ensemble import EnsembleConfig, EnsembleForecaster
 
 # ---------------------------------------------------------------------------
 # Helpers — synthetic data generators
 # ---------------------------------------------------------------------------
+
 
 def _sine_wave(n: int = 200, period: float = 20.0, seed: int = 42) -> np.ndarray:
     """Sine wave with light noise."""
@@ -30,6 +32,7 @@ def _random_walk(n: int = 200, seed: int = 42) -> np.ndarray:
 # Config tests
 # ---------------------------------------------------------------------------
 
+
 class TestEnsembleConfig:
     def test_defaults(self):
         cfg = EnsembleConfig()
@@ -48,6 +51,7 @@ class TestEnsembleConfig:
 # ---------------------------------------------------------------------------
 # Fitting & prediction
 # ---------------------------------------------------------------------------
+
 
 class TestEnsembleFit:
     def test_fit_sine_wave(self):
@@ -98,6 +102,7 @@ class TestEnsembleFit:
 # Weight properties
 # ---------------------------------------------------------------------------
 
+
 class TestWeights:
     def test_weights_sum_to_one(self):
         data = _sine_wave(200)
@@ -135,6 +140,7 @@ class TestWeights:
 # ---------------------------------------------------------------------------
 # Disabled models
 # ---------------------------------------------------------------------------
+
 
 class TestDisabledModels:
     def test_arima_only(self):
@@ -183,6 +189,7 @@ class TestDisabledModels:
 # Ensemble quality — MAE should be competitive
 # ---------------------------------------------------------------------------
 
+
 class TestEnsembleQuality:
     def test_ensemble_competitive_with_best_model(self):
         """Ensemble MAE should not be dramatically worse than the best model."""
@@ -211,6 +218,7 @@ class TestEnsembleQuality:
 # ---------------------------------------------------------------------------
 # Repr
 # ---------------------------------------------------------------------------
+
 
 class TestRepr:
     def test_unfitted_repr(self):

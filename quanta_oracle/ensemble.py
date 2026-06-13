@@ -16,12 +16,13 @@ import numpy as np
 @dataclass
 class EnsembleConfig:
     """Configuration for the ensemble forecaster."""
+
     use_arima: bool = True
     use_prophet: bool = True
     use_neural: bool = True
-    validation_window: int = 20   # lookback for weight calculation
-    min_weight: float = 0.05      # minimum weight per model (prevents zero-out)
-    reweight_interval: int = 10   # recalculate weights every N steps
+    validation_window: int = 20  # lookback for weight calculation
+    min_weight: float = 0.05  # minimum weight per model (prevents zero-out)
+    reweight_interval: int = 10  # recalculate weights every N steps
     # ARIMA hyperparameters
     arima_p: int = 2
     arima_d: int = 1
@@ -115,11 +116,12 @@ class EnsembleForecaster:
         cfg = self._config
         try:
             from quanta_oracle.arima import ARIMA
+
             model = ARIMA(p=cfg.arima_p, d=cfg.arima_d, q=cfg.arima_q)
             model.fit(train)
             forecast = model.predict(val_win)
             forecast = np.asarray(forecast, dtype=np.float64)[:val_win]
-            error = float(np.mean(np.abs(val[:len(forecast)] - forecast)))
+            error = float(np.mean(np.abs(val[: len(forecast)] - forecast)))
             self._models["arima"] = model
             self._model_names.append("arima")
             self._model_mae["arima"] = error
@@ -135,13 +137,14 @@ class EnsembleForecaster:
         """Attempt to fit Prophet and score on validation window."""
         try:
             from quanta_oracle.prophet import Prophet
+
             t_train = np.arange(len(train), dtype=np.float64)
             model = Prophet()
             model.fit(t_train, train)
             t_val = np.arange(len(train), len(train) + val_win, dtype=np.float64)
             result = model.predict(t_val)
             forecast = np.asarray(result["yhat"], dtype=np.float64)[:val_win]
-            error = float(np.mean(np.abs(val[:len(forecast)] - forecast)))
+            error = float(np.mean(np.abs(val[: len(forecast)] - forecast)))
             self._models["prophet"] = model
             self._model_names.append("prophet")
             self._model_mae["prophet"] = error
@@ -159,6 +162,7 @@ class EnsembleForecaster:
         cfg = self._config
         try:
             from quanta_oracle.neural import SimpleForecaster
+
             lookback = min(cfg.neural_lookback, len(train) // 3)
             if lookback < 5:
                 return
@@ -180,7 +184,7 @@ class EnsembleForecaster:
                     (0, val_win - len(forecast)),
                     mode="edge",
                 )
-            error = float(np.mean(np.abs(val[:len(forecast)] - forecast)))
+            error = float(np.mean(np.abs(val[: len(forecast)] - forecast)))
             self._models["neural"] = model
             self._model_names.append("neural")
             self._model_mae["neural"] = error
@@ -305,10 +309,7 @@ class EnsembleForecaster:
     @property
     def weights(self) -> dict:
         """Current model weights as a dict."""
-        return {
-            name: float(self._weights[i])
-            for i, name in enumerate(self._model_names)
-        }
+        return {name: float(self._weights[i]) for i, name in enumerate(self._model_names)}
 
     @property
     def model_errors(self) -> dict:
@@ -343,9 +344,6 @@ class EnsembleForecaster:
 
     def __repr__(self) -> str:
         if self._fitted:
-            parts = ", ".join(
-                f"{n}={w:.2f}"
-                for n, w in zip(self._model_names, self._weights)
-            )
+            parts = ", ".join(f"{n}={w:.2f}" for n, w in zip(self._model_names, self._weights))
             return f"EnsembleForecaster({parts})"
         return "EnsembleForecaster(unfitted)"
