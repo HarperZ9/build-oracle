@@ -54,9 +54,7 @@ class SettingsPage(QWidget):
         idx = self._model_combo.findText(saved_model)
         if idx >= 0:
             self._model_combo.setCurrentIndex(idx)
-        self._model_combo.currentTextChanged.connect(
-            lambda t: self._settings.setValue("defaults/model", t)
-        )
+        self._model_combo.currentTextChanged.connect(lambda t: self._settings.setValue("defaults/model", t))
         defaults_layout.addWidget(self._model_combo, 0, 1)
 
         defaults_layout.addWidget(QLabel("Default Horizon:"), 1, 0)
@@ -64,9 +62,7 @@ class SettingsPage(QWidget):
         self._horizon_spin.setRange(1, 365)
         self._horizon_spin.setValue(int(self._settings.value("defaults/horizon", 30)))
         self._horizon_spin.setSuffix(" steps")
-        self._horizon_spin.valueChanged.connect(
-            lambda v: self._settings.setValue("defaults/horizon", v)
-        )
+        self._horizon_spin.valueChanged.connect(lambda v: self._settings.setValue("defaults/horizon", v))
         defaults_layout.addWidget(self._horizon_spin, 1, 1)
 
         layout.addWidget(defaults_card)
@@ -78,9 +74,7 @@ class SettingsPage(QWidget):
 
         export_layout.addWidget(QLabel("Export Directory:"), 0, 0)
 
-        self._export_label = QLabel(
-            self._settings.value("export/directory", "Not set")
-        )
+        self._export_label = QLabel(self._settings.value("export/directory", "Not set"))
         self._export_label.setStyleSheet(f"font-size: 12px; color: {C.TEXT2};")
         self._export_label.setWordWrap(True)
         export_layout.addWidget(self._export_label, 0, 1)
@@ -136,7 +130,8 @@ class SettingsPage(QWidget):
 
     def _browse_export(self):
         directory = QFileDialog.getExistingDirectory(
-            self, "Select Export Directory",
+            self,
+            "Select Export Directory",
             self._settings.value("export/directory", ""),
         )
         if directory:

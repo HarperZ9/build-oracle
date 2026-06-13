@@ -90,12 +90,13 @@ class DashboardPage(QWidget):
         models_card, models_layout = Card.with_layout(QVBoxLayout, margins=(20, 16, 20, 16), spacing=8)
 
         models = [
-            ("ARIMA / SARIMA", "Autoregressive Integrated Moving Average with optional seasonal component",
-             C.ACCENT_TX),
-            ("Prophet-style", "Fourier-based seasonality + piecewise linear trend + changepoints",
-             C.GREEN),
-            ("Neural Network", "LSTM / Attention layers with automatic differentiation",
-             C.CYAN),
+            (
+                "ARIMA / SARIMA",
+                "Autoregressive Integrated Moving Average with optional seasonal component",
+                C.ACCENT_TX,
+            ),
+            ("Prophet-style", "Fourier-based seasonality + piecewise linear trend + changepoints", C.GREEN),
+            ("Neural Network", "LSTM / Attention layers with automatic differentiation", C.CYAN),
         ]
 
         for name, desc, color in models:

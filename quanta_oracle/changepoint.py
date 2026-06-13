@@ -28,6 +28,7 @@ def _to_array(series: ArrayLike) -> np.ndarray:
 # Segment cost (L2 / Gaussian change-in-mean)
 # ---------------------------------------------------------------------------
 
+
 def segment_cost(series: np.ndarray, start: int, end: int) -> float:
     """Cost of the segment ``series[start:end]`` under the L2 model.
 
@@ -70,6 +71,7 @@ class _CumsumCache:
 # Penalty functions
 # ---------------------------------------------------------------------------
 
+
 def _penalty_value(penalty: str, n: int) -> float:
     """child safety assessment penalty name to numeric value.
 
@@ -92,6 +94,7 @@ def _penalty_value(penalty: str, n: int) -> float:
 # ---------------------------------------------------------------------------
 # PELT algorithm
 # ---------------------------------------------------------------------------
+
 
 def pelt(
     series: ArrayLike,
@@ -183,6 +186,7 @@ def pelt(
 # Confidence scores
 # ---------------------------------------------------------------------------
 
+
 def confidence_scores(
     series: ArrayLike,
     changepoints: list[int],
@@ -233,10 +237,7 @@ def confidence_scores(
         n_l, n_r = len(left_seg), len(right_seg)
         var_l = np.var(left_seg, ddof=1) if n_l > 1 else 0.0
         var_r = np.var(right_seg, ddof=1) if n_r > 1 else 0.0
-        pooled_std = math.sqrt(
-            ((n_l - 1) * var_l + (n_r - 1) * var_r)
-            / max(n_l + n_r - 2, 1)
-        )
+        pooled_std = math.sqrt(((n_l - 1) * var_l + (n_r - 1) * var_r) / max(n_l + n_r - 2, 1))
 
         if pooled_std == 0:
             cohens_d = float("inf") if mean_diff > 0 else 0.0

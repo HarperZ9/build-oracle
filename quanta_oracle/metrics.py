@@ -20,9 +20,7 @@ def _to_arrays(actual: ArrayLike, predicted: ArrayLike) -> tuple[np.ndarray, np.
     a = np.asarray(actual, dtype=np.float64)
     p = np.asarray(predicted, dtype=np.float64)
     if a.shape != p.shape:
-        raise ValueError(
-            f"Shape mismatch: actual {a.shape} vs predicted {p.shape}"
-        )
+        raise ValueError(f"Shape mismatch: actual {a.shape} vs predicted {p.shape}")
     if a.ndim != 1:
         raise ValueError("Inputs must be 1-D arrays")
     if len(a) == 0:
@@ -33,6 +31,7 @@ def _to_arrays(actual: ArrayLike, predicted: ArrayLike) -> tuple[np.ndarray, np.
 # ---------------------------------------------------------------------------
 # Core metrics
 # ---------------------------------------------------------------------------
+
 
 def mae(actual: ArrayLike, predicted: ArrayLike) -> float:
     """Mean Absolute Error.
@@ -106,9 +105,7 @@ def mase(
     a, p = _to_arrays(actual, predicted)
     n = len(a)
     if n <= seasonal_period:
-        raise ValueError(
-            f"Series length ({n}) must exceed seasonal_period ({seasonal_period})"
-        )
+        raise ValueError(f"Series length ({n}) must exceed seasonal_period ({seasonal_period})")
     # Naive MAE on in-sample
     naive_errors = np.abs(a[seasonal_period:] - a[:-seasonal_period])
     naive_mae = np.mean(naive_errors)

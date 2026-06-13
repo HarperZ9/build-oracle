@@ -2,11 +2,13 @@
 
 import numpy as np
 import pytest
+
 from quanta_oracle.neural import Linear, ReLU, SimpleForecaster
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _sin_series(n: int = 200, seed: int = 42) -> np.ndarray:
     """Sine wave with slight noise — easy for an MLP to learn."""
@@ -21,6 +23,7 @@ def _constant_series(n: int = 200, value: float = 42.0) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Linear layer backward
 # ---------------------------------------------------------------------------
+
 
 class TestLinearBackward:
     def test_forward_caches_input(self):
@@ -65,6 +68,7 @@ class TestLinearBackward:
 # ReLU backward
 # ---------------------------------------------------------------------------
 
+
 class TestReLUBackward:
     def test_forward_caches_input(self):
         relu = ReLU()
@@ -86,6 +90,7 @@ class TestReLUBackward:
 # SimpleForecaster construction
 # ---------------------------------------------------------------------------
 
+
 class TestForecasterConstruction:
     def test_default_params(self):
         fc = SimpleForecaster()
@@ -106,6 +111,7 @@ class TestForecasterConstruction:
 # ---------------------------------------------------------------------------
 # Training
 # ---------------------------------------------------------------------------
+
 
 class TestForecasterTrain:
     def test_training_reduces_loss(self):
@@ -147,10 +153,7 @@ class TestForecasterTrain:
         pred_trained = fc_trained.predict(test_input)
         mse_trained = float(np.mean((pred_trained - test_target) ** 2))
 
-        assert mse_trained < mse_random, (
-            f"Trained MSE ({mse_trained:.4f}) should be < "
-            f"random MSE ({mse_random:.4f})"
-        )
+        assert mse_trained < mse_random, f"Trained MSE ({mse_trained:.4f}) should be < random MSE ({mse_random:.4f})"
 
     def test_constant_series_converges(self):
         """A constant series should drive loss very close to zero."""
@@ -163,6 +166,7 @@ class TestForecasterTrain:
 # ---------------------------------------------------------------------------
 # fit() alias
 # ---------------------------------------------------------------------------
+
 
 class TestFitAlias:
     def test_fit_returns_same_as_train(self):
@@ -185,6 +189,7 @@ class TestFitAlias:
 # ---------------------------------------------------------------------------
 # Prediction
 # ---------------------------------------------------------------------------
+
 
 class TestForecasterPredict:
     def test_predict_shape(self):
@@ -211,6 +216,7 @@ class TestForecasterPredict:
 # ---------------------------------------------------------------------------
 # Edge cases
 # ---------------------------------------------------------------------------
+
 
 class TestEdgeCases:
     def test_series_too_short_for_train(self):

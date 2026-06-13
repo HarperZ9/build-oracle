@@ -4,11 +4,13 @@ import math
 
 import numpy as np
 import pytest
+
 from quanta_oracle.metrics import mae, mape, mase, mse, r_squared, rmse, smape
 
 # ---------------------------------------------------------------------------
 # MAE
 # ---------------------------------------------------------------------------
+
 
 class TestMAE:
     def test_perfect_prediction(self):
@@ -28,6 +30,7 @@ class TestMAE:
 # ---------------------------------------------------------------------------
 # MSE / RMSE
 # ---------------------------------------------------------------------------
+
 
 class TestMSE:
     def test_perfect(self):
@@ -49,6 +52,7 @@ class TestMSE:
 # ---------------------------------------------------------------------------
 # MAPE / sMAPE
 # ---------------------------------------------------------------------------
+
 
 class TestMAPE:
     def test_perfect(self):
@@ -83,6 +87,7 @@ class TestSMAPE:
 # MASE
 # ---------------------------------------------------------------------------
 
+
 class TestMASE:
     def test_beats_naive(self):
         # Linear series: naive forecast is perfect for constant differences
@@ -103,6 +108,7 @@ class TestMASE:
 # ---------------------------------------------------------------------------
 # R-squared
 # ---------------------------------------------------------------------------
+
 
 class TestRSquared:
     def test_perfect(self):
@@ -127,6 +133,7 @@ class TestRSquared:
 # ---------------------------------------------------------------------------
 # Input validation
 # ---------------------------------------------------------------------------
+
 
 class TestValidation:
     def test_shape_mismatch(self):

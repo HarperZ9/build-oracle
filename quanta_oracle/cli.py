@@ -17,6 +17,7 @@ import sys
 # Sample Data Generation
 # =============================================================================
 
+
 def generate_sample_series(
     n: int = 365,
     trend: float = 0.01,
@@ -89,6 +90,7 @@ def generate_sample_series(
 # Forecast Command
 # =============================================================================
 
+
 def _cmd_forecast(args: argparse.Namespace) -> None:
     """Run ARIMA or Prophet forecast and print results."""
     import numpy as np
@@ -104,14 +106,17 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
 
         if model_type == "arima":
             from quanta_oracle.arima import ARIMA
+
             model = ARIMA._from_state(state)
             model_name = "arima"
         elif model_type == "prophet":
             from quanta_oracle.prophet import Prophet
+
             model = Prophet._from_state(state)
             model_name = "prophet"
         elif model_type == "neural":
             from quanta_oracle.neural import SimpleForecaster
+
             model = SimpleForecaster._from_state(state)
             model_name = "neural"
         elif model_type == "ensemble":
@@ -146,9 +151,9 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
             forecast = np.asarray(forecast, dtype=np.float64)[:horizon]
 
         if actual is not None:
-            errors = actual - forecast[:len(actual)]
+            errors = actual - forecast[: len(actual)]
             mae = float(np.mean(np.abs(errors)))
-            rmse = float(np.sqrt(np.mean(errors ** 2)))
+            rmse = float(np.sqrt(np.mean(errors**2)))
             nonzero = actual[actual != 0]
             if len(nonzero) > 0:
                 mape = float(np.mean(np.abs(errors[actual != 0] / nonzero)) * 100)
@@ -163,7 +168,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         print("  --- Forecast (first 5 / last 5) ---")
         fc = forecast.tolist()
         for i, v in enumerate(fc[:5]):
-            print(f"    t+{i+1:3d}: {v:.4f}")
+            print(f"    t+{i + 1:3d}: {v:.4f}")
         if len(fc) > 10:
             print(f"    {'...':>8}")
         for i, v in enumerate(fc[-5:]):
@@ -179,8 +184,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
 
         # Generate a 2-column sample series
         series1 = generate_sample_series(n=365, trend=0.01, noise=0.1)
-        series2 = generate_sample_series(n=365, trend=0.02, noise=0.15,
-                                          changepoints=1)
+        series2 = generate_sample_series(n=365, trend=0.02, noise=0.15, changepoints=1)
         data = np.column_stack([series1, series2])
         print(f"  Data source : multivariate sample ({data.shape[0]} x {data.shape[1]})")
         print("  Model       : VAR")
@@ -188,6 +192,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         print()
 
         from quanta_oracle.var import VAR as VARModel
+
         model = VARModel(p=2)
         model.fit(data)
         forecast = model.predict(horizon)
@@ -200,7 +205,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         print("  --- Forecast (first 5 / last 5) — Variable 1 ---")
         fc = forecast[:, 0].tolist()
         for i, v in enumerate(fc[:5]):
-            print(f"    t+{i+1:3d}: {v:.4f}")
+            print(f"    t+{i + 1:3d}: {v:.4f}")
         if len(fc) > 10:
             print(f"    {'...':>8}")
         for i, v in enumerate(fc[-5:]):
@@ -230,6 +235,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
     if model_name == "arima":
         try:
             from quanta_oracle.arima import ARIMA
+
             model = ARIMA(p=2, d=1, q=2)
             model.fit(train)
             forecast = model.predict(horizon)
@@ -242,6 +248,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
     elif model_name == "prophet":
         try:
             from quanta_oracle.prophet import Prophet
+
             t_train = np.arange(len(train), dtype=np.float64)
             model = Prophet()
             model.fit(t_train, train)
@@ -251,12 +258,11 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         except ImportError:
             # Fallback: seasonal naive
             period = 7
-            forecast = np.array([
-                train[-(period - i % period)] for i in range(horizon)
-            ])
+            forecast = np.array([train[-(period - i % period)] for i in range(horizon)])
     elif model_name == "ensemble":
         try:
             from quanta_oracle.ensemble import EnsembleForecaster
+
             model = EnsembleForecaster()
             model.fit(train)
             forecast = model.predict(horizon)
@@ -281,9 +287,9 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         print()
 
     # Metrics
-    errors = actual - forecast[:len(actual)]
+    errors = actual - forecast[: len(actual)]
     mae = float(np.mean(np.abs(errors)))
-    rmse = float(np.sqrt(np.mean(errors ** 2)))
+    rmse = float(np.sqrt(np.mean(errors**2)))
     nonzero = actual[actual != 0]
     if len(nonzero) > 0:
         mape = float(np.mean(np.abs(errors[actual != 0] / nonzero)) * 100)
@@ -300,7 +306,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
     print("  --- Forecast (first 5 / last 5) ---")
     fc = forecast.tolist()
     for i, v in enumerate(fc[:5]):
-        print(f"    t+{i+1:3d}: {v:.4f}")
+        print(f"    t+{i + 1:3d}: {v:.4f}")
     if len(fc) > 10:
         print(f"    {'...':>8}")
     for i, v in enumerate(fc[-5:]):
@@ -311,6 +317,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
 # =============================================================================
 # Decompose Command
 # =============================================================================
+
 
 def _cmd_decompose(args: argparse.Namespace) -> None:
     """Decompose a time series and report component strengths."""
@@ -333,6 +340,7 @@ def _cmd_decompose(args: argparse.Namespace) -> None:
 
     try:
         from quanta_oracle.decompose import classical_decompose
+
         result = classical_decompose(arr, period=period, model=model)
         trend_comp = result["trend"]
         seasonal_comp = result["seasonal"]
@@ -379,6 +387,7 @@ def _cmd_decompose(args: argparse.Namespace) -> None:
 # Changepoints Command
 # =============================================================================
 
+
 def _cmd_changepoints(args: argparse.Namespace) -> None:
     """Detect changepoints in a time series."""
     import numpy as np
@@ -398,6 +407,7 @@ def _cmd_changepoints(args: argparse.Namespace) -> None:
 
     try:
         from quanta_oracle.changepoint import pelt as pelt_detect
+
         cps = pelt_detect(arr, penalty=penalty.lower())
     except ImportError:
         # Fallback: CUSUM-like detection
@@ -410,7 +420,7 @@ def _cmd_changepoints(args: argparse.Namespace) -> None:
             if abs(cumsum) > threshold:
                 cps.append(i)
                 cumsum = 0.0
-                mean_val = float(np.mean(arr[i:min(i + 30, len(arr))]))
+                mean_val = float(np.mean(arr[i : min(i + 30, len(arr))]))
 
     if not cps:
         print("  No changepoints detected.")
@@ -422,8 +432,8 @@ def _cmd_changepoints(args: argparse.Namespace) -> None:
     print(f"  {'-----':>8}  {'----------':>10}  {'---------':>10}  {'----------':>10}")
 
     for cp in cps:
-        left_seg = arr[max(0, cp - 20):cp]
-        right_seg = arr[cp:min(len(arr), cp + 20)]
+        left_seg = arr[max(0, cp - 20) : cp]
+        right_seg = arr[cp : min(len(arr), cp + 20)]
         left_mean = float(np.mean(left_seg)) if len(left_seg) > 0 else 0.0
         right_mean = float(np.mean(right_seg)) if len(right_seg) > 0 else 0.0
         shift = abs(right_mean - left_mean)
@@ -434,6 +444,7 @@ def _cmd_changepoints(args: argparse.Namespace) -> None:
 # =============================================================================
 # Features Command
 # =============================================================================
+
 
 def _cmd_features(args: argparse.Namespace) -> None:
     """Extract and display features from a time series."""
@@ -475,12 +486,13 @@ def _cmd_features(args: argparse.Namespace) -> None:
     dominant_freq = int(np.argmax(fft_vals[1:])) + 1
     spectral_entropy = _spectral_entropy(fft_vals)
     print(f"  Dominant freq   : {dominant_freq} (period ~ {len(arr) // dominant_freq})")
-    print(f"  Spectral energy : {float(np.sum(fft_vals ** 2)):.2f}")
+    print(f"  Spectral energy : {float(np.sum(fft_vals**2)):.2f}")
     print(f"  Spectral entropy: {spectral_entropy:.4f}")
 
 
 def _skewness(arr) -> float:
     import numpy as np
+
     len(arr)
     mean = np.mean(arr)
     std = np.std(arr)
@@ -491,6 +503,7 @@ def _skewness(arr) -> float:
 
 def _kurtosis(arr) -> float:
     import numpy as np
+
     mean = np.mean(arr)
     std = np.std(arr)
     if std == 0:
@@ -500,6 +513,7 @@ def _kurtosis(arr) -> float:
 
 def _zero_crossing_rate(arr) -> float:
     import numpy as np
+
     signs = np.sign(arr)
     crossings = np.sum(np.abs(np.diff(signs)) > 0)
     return float(crossings / len(arr))
@@ -507,6 +521,7 @@ def _zero_crossing_rate(arr) -> float:
 
 def _autocorrelation(arr, lag: int) -> float:
     import numpy as np
+
     if lag >= len(arr):
         return 0.0
     mean = np.mean(arr)
@@ -518,7 +533,8 @@ def _autocorrelation(arr, lag: int) -> float:
 
 def _spectral_entropy(fft_vals) -> float:
     import numpy as np
-    power = fft_vals ** 2
+
+    power = fft_vals**2
     total = np.sum(power)
     if total == 0:
         return 0.0
@@ -531,10 +547,12 @@ def _spectral_entropy(fft_vals) -> float:
 # GUI Launch
 # =============================================================================
 
+
 def _cmd_gui(args: argparse.Namespace) -> None:
     """Launch the Quanta Oracle GUI."""
     try:
         from quanta_oracle.gui import launch
+
         sys.exit(launch())
     except ImportError as e:
         print("  Error: GUI requires PyQt6.  pip install PyQt6")
@@ -545,6 +563,7 @@ def _cmd_gui(args: argparse.Namespace) -> None:
 # =============================================================================
 # Entry Point
 # =============================================================================
+
 
 def main(argv: list[str] | None = None) -> None:
     """Parse arguments and dispatch to the appropriate command."""
@@ -557,28 +576,33 @@ def main(argv: list[str] | None = None) -> None:
     # forecast
     p_fc = sub.add_parser("forecast", help="Run a forecast model")
     p_fc.add_argument("--data", default="sample", help="Data source (default: sample)")
-    p_fc.add_argument("--model", default="arima", choices=["arima", "prophet", "ensemble"],
-                       help="Forecast model (default: arima)")
+    p_fc.add_argument(
+        "--model", default="arima", choices=["arima", "prophet", "ensemble"], help="Forecast model (default: arima)"
+    )
     p_fc.add_argument("--horizon", type=int, default=30, help="Forecast horizon (default: 30)")
-    p_fc.add_argument("--save", default=None, metavar="PATH",
-                       help="Save fitted model to PATH after training")
-    p_fc.add_argument("--load", default=None, metavar="PATH",
-                       help="Load a saved model from PATH instead of fitting")
-    p_fc.add_argument("--multivariate", action="store_true", default=False,
-                       help="Use VAR model on a 2-column sample series")
+    p_fc.add_argument("--save", default=None, metavar="PATH", help="Save fitted model to PATH after training")
+    p_fc.add_argument("--load", default=None, metavar="PATH", help="Load a saved model from PATH instead of fitting")
+    p_fc.add_argument(
+        "--multivariate", action="store_true", default=False, help="Use VAR model on a 2-column sample series"
+    )
 
     # decompose
     p_dc = sub.add_parser("decompose", help="Decompose time series")
     p_dc.add_argument("--data", default="sample", help="Data source (default: sample)")
     p_dc.add_argument("--period", type=int, default=7, help="Seasonal period (default: 7)")
-    p_dc.add_argument("--model", default="additive", choices=["additive", "multiplicative"],
-                       help="Decomposition model (default: additive)")
+    p_dc.add_argument(
+        "--model",
+        default="additive",
+        choices=["additive", "multiplicative"],
+        help="Decomposition model (default: additive)",
+    )
 
     # changepoints
     p_cp = sub.add_parser("changepoints", help="Detect changepoints")
     p_cp.add_argument("--data", default="sample", help="Data source (default: sample)")
-    p_cp.add_argument("--penalty", default="bic", choices=["bic", "aic", "mbic"],
-                       help="Penalty criterion (default: bic)")
+    p_cp.add_argument(
+        "--penalty", default="bic", choices=["bic", "aic", "mbic"], help="Penalty criterion (default: bic)"
+    )
 
     # features
     p_ft = sub.add_parser("features", help="Extract time series features")

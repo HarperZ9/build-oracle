@@ -4,7 +4,6 @@ Quanta Oracle -- Decompose Page
 Time series decomposition with trend, seasonal, and residual charts.
 """
 
-
 from PyQt6.QtCore import QPointF, QRectF, Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QColor, QPainter, QPen
 from PyQt6.QtWidgets import (
@@ -26,8 +25,10 @@ from quanta_oracle.gui.app import C, Card, Heading, Stat
 # Decompose Worker Thread
 # =============================================================================
 
+
 class DecomposeWorker(QThread):
     """Run decomposition in background thread."""
+
     finished = pyqtSignal(dict)
 
     def __init__(self, series, period, model, parent=None):
@@ -44,6 +45,7 @@ class DecomposeWorker(QThread):
 
         try:
             from quanta_oracle.decompose import classical_decompose
+
             result = classical_decompose(arr, period=period, model=self._model)
             trend = result["trend"]
             seasonal = result["seasonal"]
@@ -67,9 +69,7 @@ class DecomposeWorker(QThread):
         nan_mask = np.isnan(trend_display)
         if np.any(nan_mask) and not np.all(nan_mask):
             valid = np.where(~nan_mask)[0]
-            trend_display[nan_mask] = np.interp(
-                np.where(nan_mask)[0], valid, trend_display[valid]
-            )
+            trend_display[nan_mask] = np.interp(np.where(nan_mask)[0], valid, trend_display[valid])
             residual_display = arr - trend_display - seasonal
 
         # Strength measures (using clean data)
@@ -84,18 +84,21 @@ class DecomposeWorker(QThread):
         trend_strength = max(0, 1 - var_remainder / var_deseasoned) if var_deseasoned > 0 else 0
         seasonal_strength = max(0, 1 - var_remainder / var_detrended) if var_detrended > 0 else 0
 
-        self.finished.emit({
-            "trend": trend_display.tolist(),
-            "seasonal": seasonal.tolist(),
-            "residual": residual_display.tolist(),
-            "trend_strength": trend_strength,
-            "seasonal_strength": seasonal_strength,
-        })
+        self.finished.emit(
+            {
+                "trend": trend_display.tolist(),
+                "seasonal": seasonal.tolist(),
+                "residual": residual_display.tolist(),
+                "trend_strength": trend_strength,
+                "seasonal_strength": seasonal_strength,
+            }
+        )
 
 
 # =============================================================================
 # Mini Line Chart Widget
 # =============================================================================
+
 
 class MiniChart(QWidget):
     """Small chart for a single component (trend, seasonal, or residual)."""
@@ -128,14 +131,13 @@ class MiniChart(QWidget):
 
         # Title
         p.setPen(QColor(C.TEXT2))
-        p.drawText(QRectF(margin_l, 2, plot_w, 18),
-                   Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
-                   self._title)
+        p.drawText(
+            QRectF(margin_l, 2, plot_w, 18), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self._title
+        )
 
         if not self._data:
             p.setPen(QColor(C.TEXT3))
-            p.drawText(QRectF(margin_l, margin_t, plot_w, plot_h),
-                       Qt.AlignmentFlag.AlignCenter, "No data")
+            p.drawText(QRectF(margin_l, margin_t, plot_w, plot_h), Qt.AlignmentFlag.AlignCenter, "No data")
             p.end()
             return
 
@@ -164,9 +166,11 @@ class MiniChart(QWidget):
         for i in range(3):
             gy = margin_t + (i / 2.0) * plot_h
             val = y_max - (i / 2.0) * y_range
-            p.drawText(QRectF(0, gy - 7, margin_l - 5, 14),
-                       Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
-                       f"{val:.1f}")
+            p.drawText(
+                QRectF(0, gy - 7, margin_l - 5, 14),
+                Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter,
+                f"{val:.1f}",
+            )
 
         if self._scatter:
             # Residual scatter
@@ -204,6 +208,7 @@ class MiniChart(QWidget):
 # =============================================================================
 # Decompose Page
 # =============================================================================
+
 
 class DecomposePage(QWidget):
     """Time series decomposition configuration and visualization."""
@@ -296,6 +301,7 @@ class DecomposePage(QWidget):
         self._run_btn.setText("Decomposing...")
 
         from quanta_oracle.cli import generate_sample_series
+
         series = generate_sample_series(n=365)
 
         period = self._period_spin.value()

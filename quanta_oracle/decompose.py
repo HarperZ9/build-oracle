@@ -16,6 +16,7 @@ ArrayLike = list | np.ndarray
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _centered_moving_average(series: np.ndarray, window: int) -> np.ndarray:
     """Compute a centered moving average.
 
@@ -33,14 +34,14 @@ def _centered_moving_average(series: np.ndarray, window: int) -> np.ndarray:
         # Odd window: simple centered average
         half = window // 2
         for i in range(half, n - half):
-            result[i] = np.mean(series[i - half: i + half + 1])
+            result[i] = np.mean(series[i - half : i + half + 1])
     else:
         # Even window: 2xm moving average
         half = window // 2
         # First pass: window-length trailing average
         ma = np.full(n, np.nan)
         for i in range(window - 1, n):
-            ma[i] = np.mean(series[i - window + 1: i + 1])
+            ma[i] = np.mean(series[i - window + 1 : i + 1])
         # Second pass: average adjacent values to center
         for i in range(half, n - half):
             a = ma[i + half - 1] if (i + half - 1) < n else np.nan
@@ -76,6 +77,7 @@ def _estimate_seasonal(detrended: np.ndarray, period: int) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Main API
 # ---------------------------------------------------------------------------
+
 
 def classical_decompose(
     series: ArrayLike,

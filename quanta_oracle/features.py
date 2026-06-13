@@ -28,6 +28,7 @@ def _to_array(series: ArrayLike) -> np.ndarray:
 # Statistical features
 # ---------------------------------------------------------------------------
 
+
 def statistical_features(series: ArrayLike) -> dict:
     """Compute a dictionary of summary statistics for the series.
 
@@ -46,7 +47,7 @@ def statistical_features(series: ArrayLike) -> dict:
     median_val = float(np.median(y))
     q1, q3 = float(np.percentile(y, 25)), float(np.percentile(y, 75))
     iqr_val = q3 - q1
-    rms_val = float(np.sqrt(np.mean(y ** 2)))
+    rms_val = float(np.sqrt(np.mean(y**2)))
 
     # Skewness and kurtosis (excess kurtosis, Fisher definition)
     if n > 2:
@@ -80,6 +81,7 @@ def statistical_features(series: ArrayLike) -> dict:
 # ---------------------------------------------------------------------------
 # Temporal features
 # ---------------------------------------------------------------------------
+
 
 def _autocorrelation(y: np.ndarray, lag: int) -> float:
     """Sample autocorrelation at a given lag."""
@@ -125,6 +127,7 @@ def temporal_features(series: ArrayLike, max_lag: int = 20) -> dict:
 # Rolling features
 # ---------------------------------------------------------------------------
 
+
 def rolling_features(series: ArrayLike, window: int = 20) -> dict:
     """Compute rolling (moving window) statistics.
 
@@ -145,7 +148,7 @@ def rolling_features(series: ArrayLike, window: int = 20) -> dict:
 
     # Use cumulative sums for efficient rolling mean / std
     for i in range(window - 1, n):
-        segment = y[i - window + 1: i + 1]
+        segment = y[i - window + 1 : i + 1]
         r_mean[i] = np.mean(segment)
         r_std[i] = np.std(segment, ddof=1) if window > 1 else 0.0
         r_min[i] = np.min(segment)
@@ -162,6 +165,7 @@ def rolling_features(series: ArrayLike, window: int = 20) -> dict:
 # ---------------------------------------------------------------------------
 # Lag features
 # ---------------------------------------------------------------------------
+
 
 def lag_features(
     series: ArrayLike,
@@ -204,6 +208,7 @@ def lag_features(
 # ---------------------------------------------------------------------------
 # Transformations
 # ---------------------------------------------------------------------------
+
 
 def difference(series: ArrayLike, order: int = 1) -> np.ndarray:
     """Apply differencing *order* times.
@@ -259,5 +264,5 @@ def box_cox(
     if lam == 0:
         transformed = np.log(y)
     else:
-        transformed = (y ** lam - 1.0) / lam
+        transformed = (y**lam - 1.0) / lam
     return transformed, float(lam)

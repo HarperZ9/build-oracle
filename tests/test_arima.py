@@ -2,11 +2,13 @@
 
 import numpy as np
 import pytest
+
 from quanta_oracle.arima import ARIMA, auto_arima
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _random_walk(n: int = 200, seed: int = 42) -> np.ndarray:
     rng = np.random.default_rng(seed)
@@ -30,6 +32,7 @@ def _linear_trend(n: int = 100) -> np.ndarray:
 # ARIMA construction
 # ---------------------------------------------------------------------------
 
+
 class TestARIMAConstruction:
     def test_default_orders(self):
         m = ARIMA()
@@ -50,6 +53,7 @@ class TestARIMAConstruction:
 # ---------------------------------------------------------------------------
 # Fitting
 # ---------------------------------------------------------------------------
+
 
 class TestARIMAFit:
     def test_fit_returns_self(self):
@@ -83,6 +87,7 @@ class TestARIMAFit:
 # ---------------------------------------------------------------------------
 # Prediction
 # ---------------------------------------------------------------------------
+
 
 class TestARIMAPredict:
     def test_predict_length(self):
@@ -118,6 +123,7 @@ class TestARIMAPredict:
 # Information criteria
 # ---------------------------------------------------------------------------
 
+
 class TestInformationCriteria:
     def test_aic_finite(self):
         m = ARIMA(1, 1, 0).fit(_random_walk())
@@ -143,6 +149,7 @@ class TestInformationCriteria:
 # ---------------------------------------------------------------------------
 # auto_arima
 # ---------------------------------------------------------------------------
+
 
 class TestAutoARIMA:
     def test_returns_fitted_model(self):

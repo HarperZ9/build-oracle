@@ -2,11 +2,13 @@
 
 import numpy as np
 import pytest
+
 from quanta_oracle.changepoint import confidence_scores, pelt, segment_cost
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _step_series(
     n1: int = 100,
@@ -35,6 +37,7 @@ def _multi_step_series(seed: int = 42) -> tuple[np.ndarray, list[int]]:
 # segment_cost
 # ---------------------------------------------------------------------------
 
+
 class TestSegmentCost:
     def test_constant_segment(self):
         y = np.array([5.0, 5.0, 5.0, 5.0])
@@ -58,6 +61,7 @@ class TestSegmentCost:
 # pelt
 # ---------------------------------------------------------------------------
 
+
 class TestPELT:
     def test_single_changepoint_detected(self):
         y = _step_series(n1=100, n2=100, mean1=0, mean2=10)
@@ -77,9 +81,7 @@ class TestPELT:
         assert len(cps) >= 2
         # Each true changepoint should have a detection nearby
         for tcp in true_cps:
-            assert any(abs(cp - tcp) < 15 for cp in cps), (
-                f"No detection near true changepoint {tcp}; got {cps}"
-            )
+            assert any(abs(cp - tcp) < 15 for cp in cps), f"No detection near true changepoint {tcp}; got {cps}"
 
     def test_returns_sorted(self):
         y = _step_series()
@@ -117,6 +119,7 @@ class TestPELT:
 # ---------------------------------------------------------------------------
 # confidence_scores
 # ---------------------------------------------------------------------------
+
 
 class TestConfidenceScores:
     def test_empty_changepoints(self):
