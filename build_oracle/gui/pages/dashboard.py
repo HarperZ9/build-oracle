@@ -1,5 +1,5 @@
 """
-Quanta Oracle -- Dashboard Page
+Build Oracle -- Dashboard Page
 
 Overview stats, quick actions, and library info.
 """
@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from quanta_oracle.gui.app import C, Card, Heading, Stat
+from build_oracle.gui.app import C, Card, Heading, Stat
 
 
 class DashboardPage(QWidget):
@@ -159,8 +159,8 @@ class DashboardPage(QWidget):
         layout.addWidget(Heading("Library", level=3))
 
         info_label = QLabel(
-            "Quanta Oracle v1.0.0  --  Pure NumPy/SciPy core with zero heavy dependencies.  "
-            "Part of the Quanta Universe."
+            "Build Oracle v1.0.0  --  Pure NumPy/SciPy core with zero heavy dependencies.  "
+            "Part of the Build Universe."
         )
         info_label.setStyleSheet(f"font-size: 11px; color: {C.TEXT3};")
         info_label.setWordWrap(True)

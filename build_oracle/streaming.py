@@ -19,9 +19,9 @@ from datetime import datetime
 
 import numpy as np
 
-from quanta_oracle.arima import ARIMA
-from quanta_oracle.neural import SimpleForecaster
-from quanta_oracle.prophet import Prophet
+from build_oracle.arima import ARIMA
+from build_oracle.neural import SimpleForecaster
+from build_oracle.prophet import Prophet
 
 
 @dataclass
@@ -216,7 +216,7 @@ class StreamForecaster:
                     # the state with the new observation
                     model = self._models[name]
                     model._series = data.copy()
-                    from quanta_oracle.arima import _autocov, _difference, _levinson_durbin
+                    from build_oracle.arima import _autocov, _difference, _levinson_durbin
 
                     z = _difference(data, model.d)
                     model._diff_series = z.copy()
@@ -235,7 +235,7 @@ class StreamForecaster:
                                 ar_part += model.phi[j] * z_centered[t - j - 1]
                         residuals[t] = z_centered[t] - ar_part
                     model._residuals = residuals
-                    from quanta_oracle.arima import _estimate_ma
+                    from build_oracle.arima import _estimate_ma
 
                     if model.q > 0:
                         model.theta = _estimate_ma(residuals, model.q)

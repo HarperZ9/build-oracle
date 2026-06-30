@@ -1,11 +1,11 @@
-"""Tests for quanta_oracle.metrics."""
+"""Tests for build_oracle.metrics."""
 
 import math
 
 import numpy as np
 import pytest
 
-from quanta_oracle.metrics import mae, mape, mase, mse, r_squared, rmse, smape
+from build_oracle.metrics import mae, mape, mase, mse, r_squared, rmse, smape
 
 # ---------------------------------------------------------------------------
 # MAE

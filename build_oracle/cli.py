@@ -1,12 +1,12 @@
 """
-Quanta Oracle — Command-Line Interface
+Build Oracle — Command-Line Interface
 
 Commands:
-    quanta-oracle forecast    --data sample --model arima --horizon 30
-    quanta-oracle decompose   --data sample --period 7
-    quanta-oracle changepoints --data sample --penalty bic
-    quanta-oracle features    --data sample
-    quanta-oracle gui         (launch GUI, default if no command)
+    build-oracle forecast    --data sample --model arima --horizon 30
+    build-oracle decompose   --data sample --period 7
+    build-oracle changepoints --data sample --penalty bic
+    build-oracle features    --data sample
+    build-oracle gui         (launch GUI, default if no command)
 """
 
 import argparse
@@ -105,17 +105,17 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         model_type = state.get("model_type", "")
 
         if model_type == "arima":
-            from quanta_oracle.arima import ARIMA
+            from build_oracle.arima import ARIMA
 
             model = ARIMA._from_state(state)
             model_name = "arima"
         elif model_type == "prophet":
-            from quanta_oracle.prophet import Prophet
+            from build_oracle.prophet import Prophet
 
             model = Prophet._from_state(state)
             model_name = "prophet"
         elif model_type == "neural":
-            from quanta_oracle.neural import SimpleForecaster
+            from build_oracle.neural import SimpleForecaster
 
             model = SimpleForecaster._from_state(state)
             model_name = "neural"
@@ -191,7 +191,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
         print(f"  Horizon     : {horizon} steps")
         print()
 
-        from quanta_oracle.var import VAR as VARModel
+        from build_oracle.var import VAR as VARModel
 
         model = VARModel(p=2)
         model.fit(data)
@@ -234,7 +234,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
 
     if model_name == "arima":
         try:
-            from quanta_oracle.arima import ARIMA
+            from build_oracle.arima import ARIMA
 
             model = ARIMA(p=2, d=1, q=2)
             model.fit(train)
@@ -247,7 +247,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
             forecast = np.array([last_val + slope * (i + 1) for i in range(horizon)])
     elif model_name == "prophet":
         try:
-            from quanta_oracle.prophet import Prophet
+            from build_oracle.prophet import Prophet
 
             t_train = np.arange(len(train), dtype=np.float64)
             model = Prophet()
@@ -261,7 +261,7 @@ def _cmd_forecast(args: argparse.Namespace) -> None:
             forecast = np.array([train[-(period - i % period)] for i in range(horizon)])
     elif model_name == "ensemble":
         try:
-            from quanta_oracle.ensemble import EnsembleForecaster
+            from build_oracle.ensemble import EnsembleForecaster
 
             model = EnsembleForecaster()
             model.fit(train)
@@ -339,7 +339,7 @@ def _cmd_decompose(args: argparse.Namespace) -> None:
     arr = np.array(series, dtype=np.float64)
 
     try:
-        from quanta_oracle.decompose import classical_decompose
+        from build_oracle.decompose import classical_decompose
 
         result = classical_decompose(arr, period=period, model=model)
         trend_comp = result["trend"]
@@ -406,7 +406,7 @@ def _cmd_changepoints(args: argparse.Namespace) -> None:
     arr = np.array(series, dtype=np.float64)
 
     try:
-        from quanta_oracle.changepoint import pelt as pelt_detect
+        from build_oracle.changepoint import pelt as pelt_detect
 
         cps = pelt_detect(arr, penalty=penalty.lower())
     except ImportError:
@@ -549,9 +549,9 @@ def _spectral_entropy(fft_vals) -> float:
 
 
 def _cmd_gui(args: argparse.Namespace) -> None:
-    """Launch the Quanta Oracle GUI."""
+    """Launch the Build Oracle GUI."""
     try:
-        from quanta_oracle.gui import launch
+        from build_oracle.gui import launch
 
         sys.exit(launch())
     except ImportError as e:
@@ -568,8 +568,8 @@ def _cmd_gui(args: argparse.Namespace) -> None:
 def main(argv: list[str] | None = None) -> None:
     """Parse arguments and dispatch to the appropriate command."""
     parser = argparse.ArgumentParser(
-        prog="quanta-oracle",
-        description="Quanta Oracle -- Time Series Forecasting & Anomaly Detection",
+        prog="build-oracle",
+        description="Build Oracle -- Time Series Forecasting & Anomaly Detection",
     )
     sub = parser.add_subparsers(dest="command")
 
@@ -614,7 +614,7 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     print()
-    print("  Quanta Oracle v1.0.0")
+    print("  Build Oracle v1.0.0")
     print("  " + "=" * 40)
     print()
 

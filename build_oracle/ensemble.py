@@ -115,7 +115,7 @@ class EnsembleForecaster:
         """Attempt to fit ARIMA and score on validation window."""
         cfg = self._config
         try:
-            from quanta_oracle.arima import ARIMA
+            from build_oracle.arima import ARIMA
 
             model = ARIMA(p=cfg.arima_p, d=cfg.arima_d, q=cfg.arima_q)
             model.fit(train)
@@ -136,7 +136,7 @@ class EnsembleForecaster:
     ) -> None:
         """Attempt to fit Prophet and score on validation window."""
         try:
-            from quanta_oracle.prophet import Prophet
+            from build_oracle.prophet import Prophet
 
             t_train = np.arange(len(train), dtype=np.float64)
             model = Prophet()
@@ -161,7 +161,7 @@ class EnsembleForecaster:
         """Attempt to fit SimpleForecaster and score on validation window."""
         cfg = self._config
         try:
-            from quanta_oracle.neural import SimpleForecaster
+            from build_oracle.neural import SimpleForecaster
 
             lookback = min(cfg.neural_lookback, len(train) // 3)
             if lookback < 5:

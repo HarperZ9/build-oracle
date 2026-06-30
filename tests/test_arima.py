@@ -1,9 +1,9 @@
-"""Tests for quanta_oracle.arima."""
+"""Tests for build_oracle.arima."""
 
 import numpy as np
 import pytest
 
-from quanta_oracle.arima import ARIMA, auto_arima
+from build_oracle.arima import ARIMA, auto_arima
 
 # ---------------------------------------------------------------------------
 # Helpers

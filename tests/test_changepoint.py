@@ -1,9 +1,9 @@
-"""Tests for quanta_oracle.changepoint."""
+"""Tests for build_oracle.changepoint."""
 
 import numpy as np
 import pytest
 
-from quanta_oracle.changepoint import confidence_scores, pelt, segment_cost
+from build_oracle.changepoint import confidence_scores, pelt, segment_cost
 
 # ---------------------------------------------------------------------------
 # Helpers

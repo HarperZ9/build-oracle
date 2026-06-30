@@ -1,5 +1,5 @@
 """
-Quanta Oracle -- Main Application
+Build Oracle -- Main Application
 
 Professional time series forecasting workbench with sidebar navigation,
 page transitions, and the shared Calibrate Pro visual framework.
@@ -39,12 +39,12 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from quanta_ui.theme import STYLE, C
-from quanta_ui.widgets import Heading, Sidebar, ToastNotification
+from build_ui.theme import STYLE, C
+from build_ui.widgets import Heading, Sidebar, ToastNotification
 
-APP_NAME = "Quanta Oracle"
+APP_NAME = "Build Oracle"
 APP_VERSION = "1.0.0"
-APP_ORG = "Quanta Universe"
+APP_ORG = "Build Universe"
 
 
 # =============================================================================
@@ -180,7 +180,7 @@ PAGE_MENU_NAMES = [
 ]
 
 
-class QuantaOracleWindow(QMainWindow):
+class BuildOracleWindow(QMainWindow):
     """Main application window."""
 
     def __init__(self):
@@ -255,7 +255,7 @@ class QuantaOracleWindow(QMainWindow):
 
         # Page 0: Dashboard
         try:
-            from quanta_oracle.gui.pages.dashboard import DashboardPage
+            from build_oracle.gui.pages.dashboard import DashboardPage
 
             self.stack.addWidget(DashboardPage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
@@ -264,7 +264,7 @@ class QuantaOracleWindow(QMainWindow):
 
         # Page 1: Forecast
         try:
-            from quanta_oracle.gui.pages.forecast_page import ForecastPage
+            from build_oracle.gui.pages.forecast_page import ForecastPage
 
             self.stack.addWidget(ForecastPage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
@@ -273,7 +273,7 @@ class QuantaOracleWindow(QMainWindow):
 
         # Page 2: Decompose
         try:
-            from quanta_oracle.gui.pages.decompose_page import DecomposePage
+            from build_oracle.gui.pages.decompose_page import DecomposePage
 
             self.stack.addWidget(DecomposePage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
@@ -282,7 +282,7 @@ class QuantaOracleWindow(QMainWindow):
 
         # Page 3: Changepoints
         try:
-            from quanta_oracle.gui.pages.changepoint_page import ChangepointPage
+            from build_oracle.gui.pages.changepoint_page import ChangepointPage
 
             self.stack.addWidget(ChangepointPage(main_window=self))
         except (ImportError, AttributeError, TypeError) as e:
@@ -291,7 +291,7 @@ class QuantaOracleWindow(QMainWindow):
 
         # Page 4: Settings
         try:
-            from quanta_oracle.gui.pages.settings_page import SettingsPage
+            from build_oracle.gui.pages.settings_page import SettingsPage
 
             self.stack.addWidget(SettingsPage())
         except (ImportError, AttributeError, TypeError) as e:
@@ -390,6 +390,6 @@ class QuantaOracleWindow(QMainWindow):
 # =============================================================================
 
 if __name__ == "__main__":
-    from quanta_oracle.gui import launch
+    from build_oracle.gui import launch
 
     sys.exit(launch())

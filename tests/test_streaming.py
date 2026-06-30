@@ -1,8 +1,8 @@
-"""Tests for quanta_oracle.streaming."""
+"""Tests for build_oracle.streaming."""
 
 import numpy as np
 
-from quanta_oracle.streaming import StreamConfig, StreamForecaster, StreamUpdate
+from build_oracle.streaming import StreamConfig, StreamForecaster, StreamUpdate
 
 # ---------------------------------------------------------------------------
 # Helpers -- synthetic data generators

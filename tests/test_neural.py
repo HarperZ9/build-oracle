@@ -1,9 +1,9 @@
-"""Tests for quanta_oracle.neural — layers, backprop, and SimpleForecaster."""
+"""Tests for build_oracle.neural — layers, backprop, and SimpleForecaster."""
 
 import numpy as np
 import pytest
 
-from quanta_oracle.neural import Linear, ReLU, SimpleForecaster
+from build_oracle.neural import Linear, ReLU, SimpleForecaster
 
 # ---------------------------------------------------------------------------
 # Helpers

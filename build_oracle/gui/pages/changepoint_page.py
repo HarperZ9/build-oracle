@@ -1,5 +1,5 @@
 """
-Quanta Oracle -- Changepoint Detection Page
+Build Oracle -- Changepoint Detection Page
 
 Detect structural breaks in time series with configurable penalties.
 """
@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from quanta_oracle.gui.app import C, Card, Heading
+from build_oracle.gui.app import C, Card, Heading
 
 # =============================================================================
 # Changepoint Worker Thread
@@ -46,7 +46,7 @@ class ChangepointWorker(QThread):
         arr = np.array(self._series, dtype=np.float64)
 
         try:
-            from quanta_oracle.changepoint import pelt as pelt_detect
+            from build_oracle.changepoint import pelt as pelt_detect
 
             cps = pelt_detect(arr, penalty=self._penalty, min_segment=self._min_segment)
         except ImportError:
@@ -364,7 +364,7 @@ class ChangepointPage(QWidget):
         self._run_btn.setEnabled(False)
         self._run_btn.setText("Detecting...")
 
-        from quanta_oracle.cli import generate_sample_series
+        from build_oracle.cli import generate_sample_series
 
         series = generate_sample_series(n=365, changepoints=3)
 
