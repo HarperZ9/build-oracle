@@ -1,5 +1,5 @@
 """
-Quanta Oracle -- Decompose Page
+Build Oracle -- Decompose Page
 
 Time series decomposition with trend, seasonal, and residual charts.
 """
@@ -19,7 +19,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from quanta_oracle.gui.app import C, Card, Heading, Stat
+from build_oracle.gui.app import C, Card, Heading, Stat
 
 # =============================================================================
 # Decompose Worker Thread
@@ -44,7 +44,7 @@ class DecomposeWorker(QThread):
         period = self._period
 
         try:
-            from quanta_oracle.decompose import classical_decompose
+            from build_oracle.decompose import classical_decompose
 
             result = classical_decompose(arr, period=period, model=self._model)
             trend = result["trend"]
@@ -300,7 +300,7 @@ class DecomposePage(QWidget):
         self._run_btn.setEnabled(False)
         self._run_btn.setText("Decomposing...")
 
-        from quanta_oracle.cli import generate_sample_series
+        from build_oracle.cli import generate_sample_series
 
         series = generate_sample_series(n=365)
 

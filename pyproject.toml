@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "quanta-oracle"
+name = "build-oracle"
 version = "1.0.0"
 description = "Time series forecasting and anomaly detection — ARIMA, Prophet-style, neural nets, changepoint detection"
 readme = "README.md"
@@ -23,19 +23,19 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/HarperZ9/quanta-oracle"
-Repository = "https://github.com/HarperZ9/quanta-oracle"
-Issues = "https://github.com/HarperZ9/quanta-oracle/issues"
+Homepage = "https://github.com/HarperZ9/build-oracle"
+Repository = "https://github.com/HarperZ9/build-oracle"
+Issues = "https://github.com/HarperZ9/build-oracle/issues"
 
 [project.scripts]
-quanta-oracle = "quanta_oracle.cli:main"
+build-oracle = "build_oracle.cli:main"
 
 [project.optional-dependencies]
-gui = ["PyQt6>=6.5,<7", "quanta-ui>=1.0.0"]
+gui = ["PyQt6>=6.5,<7", "build-ui>=1.0.0"]
 all = ["pandas>=2.0,<3", "scikit-learn>=1.3,<2", "matplotlib>=3.7,<4", "PyQt6>=6.5,<7"]
 
 [tool.setuptools.packages.find]
-include = ["quanta_oracle*"]
+include = ["build_oracle*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

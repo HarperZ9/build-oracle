@@ -1,5 +1,5 @@
 """
-Quanta Oracle -- Settings Page
+Build Oracle -- Settings Page
 
 Default configuration, export directory, and about section.
 """
@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from quanta_oracle.gui.app import APP_NAME, APP_ORG, APP_VERSION, C, Card, Heading
+from build_oracle.gui.app import APP_NAME, APP_ORG, APP_VERSION, C, Card, Heading
 
 
 class SettingsPage(QWidget):
@@ -104,7 +104,7 @@ class SettingsPage(QWidget):
             "ARIMA, Prophet-style models, changepoint detection,\n"
             "decomposition, and feature extraction.\n\n"
             "Pure NumPy/SciPy core with zero heavy dependencies.\n"
-            "Part of the Quanta Universe."
+            "Part of the Build Universe."
         )
         desc.setStyleSheet(f"font-size: 12px; color: {C.TEXT2}; line-height: 1.5;")
         desc.setWordWrap(True)

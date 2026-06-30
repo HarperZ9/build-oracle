@@ -1,4 +1,4 @@
-# Quanta Oracle
+# Build Oracle
 
 Time series forecasting and anomaly detection toolkit.
 
@@ -27,25 +27,25 @@ pip install ".[all]"
 
 ```bash
 # Forecast with ARIMA (built-in sample data)
-quanta-oracle forecast --data sample --model arima --horizon 30
+build-oracle forecast --data sample --model arima --horizon 30
 
 # Decompose a time series
-quanta-oracle decompose --data sample --period 7
+build-oracle decompose --data sample --period 7
 
 # Detect changepoints
-quanta-oracle changepoints --data sample --penalty bic
+build-oracle changepoints --data sample --penalty bic
 
 # Extract features
-quanta-oracle features --data sample
+build-oracle features --data sample
 
 # Launch GUI
-quanta-oracle gui
+build-oracle gui
 ```
 
 ### Python API
 
 ```python
-from quanta_oracle.models.arima import ARIMAModel
+from build_oracle.models.arima import ARIMAModel
 
 model = ARIMAModel(order=(2, 1, 1))
 model.fit(training_data)

@@ -1,5 +1,5 @@
 """
-Quanta Oracle — GUI Package
+Build Oracle — GUI Package
 
 Launch the PyQt6 application window.
 """
@@ -10,9 +10,9 @@ def launch():
 
     from PyQt6.QtWidgets import QApplication
 
-    from quanta_oracle.gui.app import QuantaOracleWindow
+    from build_oracle.gui.app import BuildOracleWindow
 
     app = QApplication(sys.argv)
-    window = QuantaOracleWindow()
+    window = BuildOracleWindow()
     window.show()
     return app.exec()

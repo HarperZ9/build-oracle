@@ -1,9 +1,9 @@
-"""Tests for quanta_oracle.decompose."""
+"""Tests for build_oracle.decompose."""
 
 import numpy as np
 import pytest
 
-from quanta_oracle.decompose import (
+from build_oracle.decompose import (
     classical_decompose,
     seasonal_strength,
     trend_strength,

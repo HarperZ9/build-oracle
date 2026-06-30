@@ -1,5 +1,5 @@
 """
-Quanta Oracle -- Forecast Page
+Build Oracle -- Forecast Page
 
 Data source selection, model configuration, forecast execution,
 results display with QPainter chart.
@@ -21,7 +21,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from quanta_oracle.gui.app import C, Card, Heading, Stat
+from build_oracle.gui.app import C, Card, Heading, Stat
 
 # =============================================================================
 # Forecast Worker Thread
@@ -48,7 +48,7 @@ class ForecastWorker(QThread):
 
         if self._model_name == "arima":
             try:
-                from quanta_oracle.arima import ARIMA
+                from build_oracle.arima import ARIMA
 
                 model = ARIMA(p=2, d=1, q=2)
                 model.fit(train)
@@ -60,7 +60,7 @@ class ForecastWorker(QThread):
                 forecast = np.array([last_val + slope * (i + 1) for i in range(self._horizon)])
         else:  # prophet
             try:
-                from quanta_oracle.prophet import Prophet
+                from build_oracle.prophet import Prophet
 
                 model = Prophet()
                 model.fit(train)
@@ -404,7 +404,7 @@ class ForecastPage(QWidget):
                     self._main_window.show_toast(f"CSV load error: {e}", "warning")
                 return
         else:
-            from quanta_oracle.cli import generate_sample_series
+            from build_oracle.cli import generate_sample_series
 
             series = generate_sample_series(n=365)
 
