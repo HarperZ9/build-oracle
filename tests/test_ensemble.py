@@ -1,9 +1,9 @@
-"""Tests for quanta_oracle.ensemble."""
+"""Tests for build_oracle.ensemble."""
 
 import numpy as np
 import pytest
 
-from quanta_oracle.ensemble import EnsembleConfig, EnsembleForecaster
+from build_oracle.ensemble import EnsembleConfig, EnsembleForecaster
 
 # ---------------------------------------------------------------------------
 # Helpers — synthetic data generators

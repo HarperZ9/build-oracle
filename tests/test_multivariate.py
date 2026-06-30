@@ -48,7 +48,7 @@ def _make_prophet_data(n: int = 200, seed: int = 42):
 class TestVARFit:
     def test_fit_2var(self):
         """VAR fits on 2-variable data without error."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         data = _make_var_data(T=100, K=2)
         model = VAR(p=2)
@@ -58,7 +58,7 @@ class TestVARFit:
 
     def test_fit_3var(self):
         """VAR fits on 3-variable data."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         rng = np.random.default_rng(99)
         data = rng.standard_normal((120, 3))
@@ -69,7 +69,7 @@ class TestVARFit:
 
     def test_fit_too_short_raises(self):
         """VAR raises ValueError when series is shorter than p+1."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         model = VAR(p=5)
         with pytest.raises(ValueError, match="at least"):
@@ -77,7 +77,7 @@ class TestVARFit:
 
     def test_fit_1d_raises(self):
         """VAR raises ValueError on 1-D input."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         model = VAR(p=2)
         with pytest.raises(ValueError, match="2-D"):
@@ -87,7 +87,7 @@ class TestVARFit:
 class TestVARPredict:
     def test_predict_shape(self):
         """predict returns (horizon, K) array."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         data = _make_var_data(T=100, K=2)
         model = VAR(p=2)
@@ -97,7 +97,7 @@ class TestVARPredict:
 
     def test_predict_horizon_1(self):
         """Single-step forecast works."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         data = _make_var_data(T=60, K=2)
         model = VAR(p=1)
@@ -108,7 +108,7 @@ class TestVARPredict:
 
     def test_predict_before_fit_raises(self):
         """predict raises RuntimeError before fit."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         model = VAR(p=2)
         with pytest.raises(RuntimeError, match="fitted"):
@@ -116,7 +116,7 @@ class TestVARPredict:
 
     def test_predict_values_reasonable(self):
         """Forecasts from a near-stationary process stay bounded."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         data = _make_var_data(T=200, K=2, seed=7)
         model = VAR(p=2)
@@ -129,7 +129,7 @@ class TestVARPredict:
 class TestVARPersistence:
     def test_save_load_roundtrip(self):
         """Model state survives save/load."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         data = _make_var_data(T=80, K=2)
         model = VAR(p=2)
@@ -150,7 +150,7 @@ class TestVARPersistence:
 
     def test_load_bad_type_raises(self):
         """Loading a non-VAR JSON raises ValueError."""
-        from quanta_oracle.var import VAR
+        from build_oracle.var import VAR
 
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w") as f:
             json.dump({"model_type": "arima"}, f)
@@ -170,7 +170,7 @@ class TestVARPersistence:
 class TestProphetRegressors:
     def test_fit_with_regressors(self):
         """Prophet fits when regressors are provided."""
-        from quanta_oracle.prophet import Prophet
+        from build_oracle.prophet import Prophet
 
         t, y, reg = _make_prophet_data(n=200)
         model = Prophet(n_changepoints=5, fourier_order=3)
@@ -181,7 +181,7 @@ class TestProphetRegressors:
 
     def test_predict_with_regressors(self):
         """Predictions include regressor component."""
-        from quanta_oracle.prophet import Prophet
+        from build_oracle.prophet import Prophet
 
         t, y, reg = _make_prophet_data(n=200)
         model = Prophet(n_changepoints=5, fourier_order=3)
@@ -200,7 +200,7 @@ class TestProphetRegressors:
 
     def test_predict_without_regressors_still_works(self):
         """Prophet trained without regressors still works normally."""
-        from quanta_oracle.prophet import Prophet
+        from build_oracle.prophet import Prophet
 
         t = np.arange(100, dtype=np.float64)
         y = 0.1 * t + np.sin(2 * np.pi * t / 7.0)
@@ -212,7 +212,7 @@ class TestProphetRegressors:
 
     def test_save_load_with_regressors(self):
         """Prophet with regressors survives save/load."""
-        from quanta_oracle.prophet import Prophet
+        from build_oracle.prophet import Prophet
 
         t, y, reg = _make_prophet_data(n=200)
         model = Prophet(n_changepoints=5, fourier_order=3)
@@ -238,7 +238,7 @@ class TestProphetRegressors:
 class TestNeuralMultivariate:
     def test_train_2d_input(self):
         """SimpleForecaster trains on (T, 2) data."""
-        from quanta_oracle.neural import SimpleForecaster
+        from build_oracle.neural import SimpleForecaster
 
         rng = np.random.default_rng(42)
         data = rng.standard_normal((100, 2))
@@ -249,7 +249,7 @@ class TestNeuralMultivariate:
 
     def test_predict_2d_input_shape(self):
         """Prediction from multivariate input has shape (horizon,)."""
-        from quanta_oracle.neural import SimpleForecaster
+        from build_oracle.neural import SimpleForecaster
 
         rng = np.random.default_rng(42)
         data = rng.standard_normal((100, 2))
@@ -261,7 +261,7 @@ class TestNeuralMultivariate:
 
     def test_univariate_backward_compat(self):
         """Univariate path still works unchanged."""
-        from quanta_oracle.neural import SimpleForecaster
+        from build_oracle.neural import SimpleForecaster
 
         rng = np.random.default_rng(42)
         series = np.cumsum(rng.standard_normal(80))
@@ -272,7 +272,7 @@ class TestNeuralMultivariate:
 
     def test_save_load_multivariate(self):
         """Multivariate neural model survives save/load."""
-        from quanta_oracle.neural import SimpleForecaster
+        from build_oracle.neural import SimpleForecaster
 
         rng = np.random.default_rng(42)
         data = rng.standard_normal((100, 2))

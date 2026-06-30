@@ -1,5 +1,5 @@
 """
-Quanta Oracle — Time Series Forecasting & Anomaly Detection
+Build Oracle — Time Series Forecasting & Anomaly Detection
 
 Modules:
     tensor       - N-dimensional tensor operations
