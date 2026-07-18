@@ -14,8 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install ruff + mypy
-        run: pip install ruff mypy
+      - name: Install project + dev tools
+        run: pip install -e ".[dev]"
       - name: Lint
         run: ruff check .
       - name: Format check
