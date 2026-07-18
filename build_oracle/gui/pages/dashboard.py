@@ -159,8 +159,7 @@ class DashboardPage(QWidget):
         layout.addWidget(Heading("Library", level=3))
 
         info_label = QLabel(
-            "Build Oracle v1.0.0  --  Pure NumPy/SciPy core with zero heavy dependencies.  "
-            "Part of the Build Universe."
+            "Build Oracle v1.0.0  --  Pure NumPy/SciPy core with zero heavy dependencies.  Part of the Build Universe."
         )
         info_label.setStyleSheet(f"font-size: 11px; color: {C.TEXT3};")
         info_label.setWordWrap(True)

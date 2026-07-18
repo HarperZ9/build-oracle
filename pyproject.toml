@@ -51,7 +51,7 @@ omit = ["*/gui/*"]  # GUI is exercised manually, not in headless CI
 show_missing = true
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 files = ["build_oracle"]
 # External GUI/imaging libraries (PyQt6, build-ui) ship no type stubs.
 ignore_missing_imports = true
