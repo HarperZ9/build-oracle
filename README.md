@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/zentropy-banner.png" alt="Build Oracle, a Python time-series forecasting workbench">
+  <img src=".github/assets/banner.png" alt="Build Oracle, a Python time-series forecasting workbench">
 </p>
 <!-- Project mark: docs/brand/build-oracle-mark.svg -->
 
@@ -93,4 +93,4 @@ requires a separate commercial license.
 
 ---
 
-**[Zentropy Labs](https://github.com/ZentropyLabs-ai)** · order out of entropy. An independent lab building evidence-first tools that leave a re-checkable artifact behind. Built by Zain Dana Harper in Seattle. The full workbench is at [Project Telos](https://harperz9.github.io).
+Built by **[Zain Dana Harper](https://harperz9.github.io)** in Seattle: evidence-first tools that leave a re-checkable artifact behind. The full workbench is at [Project Telos](https://harperz9.github.io).
