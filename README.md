@@ -1,19 +1,22 @@
-<p align="center">
-  <img src=".github/assets/banner.png" alt="Build Oracle, a Python time-series forecasting workbench">
-</p>
-<!-- Project mark: docs/brand/build-oracle-mark.svg -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/HarperZ9/build-oracle/main/docs/art/hero-dark.svg">
+  <img src="https://raw.githubusercontent.com/HarperZ9/build-oracle/main/docs/art/hero-light.svg" alt="build-oracle: Python time-series forecasting with ARIMA and changepoint detection. 6 wavering traces run from the left and narrow into a bright core over a row of tick marks." width="100%">
+</picture>
 
-# Build Oracle
+# build-oracle
 
-> Python time-series forecasting workbench for ARIMA, VAR, Prophet-style decomposition, neural forecasting, dynamic ensembles, PELT changepoint detection, and streaming incremental updates.
+Python time-series forecasting with ARIMA and changepoint detection.
+
+```
+pip install .
+```
+
+[![version: 1.0.0](https://img.shields.io/badge/version-1.0.0-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/build-oracle/releases/latest)
+[![CI](https://github.com/HarperZ9/build-oracle/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/build-oracle/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-FSL--1.1--MIT-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/build-oracle/blob/main/LICENSE)
+![python 3.10+](https://img.shields.io/badge/python-3.10%2B-e6e1d6?style=flat-square&labelColor=1a1712)
 
 [Project Telos](https://harperz9.github.io) | [gather](https://github.com/HarperZ9/gather) | [crucible](https://github.com/HarperZ9/crucible) | [index](https://github.com/HarperZ9/index) | [forum](https://github.com/HarperZ9/forum) | [telos](https://github.com/HarperZ9/telos) | [emet](https://github.com/HarperZ9/emet) | [buildlang](https://github.com/HarperZ9/buildlang)
-
-[![CI](https://github.com/HarperZ9/build-oracle/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/build-oracle/actions/workflows/ci.yml)
-![version: 1.0.1](https://img.shields.io/badge/version-1.0.1-informational.svg)
-![python: 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
-![core deps: numpy/scipy](https://img.shields.io/badge/core%20deps-numpy%2Fscipy-success.svg)
-[![license: fair-source](https://img.shields.io/badge/license-fair--source-blue.svg)](LICENSE)
 
 Time series forecasting and anomaly detection toolkit.
 
