@@ -41,3 +41,9 @@ jobs:
           pip install pytest pytest-cov
       - name: Run tests with coverage
         run: pytest tests/ -q --cov=build_oracle --cov-report=term-missing --cov-fail-under=55
+  art-receipts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify art receipt digests
+        run: python3 scripts/check_art_receipts.py
