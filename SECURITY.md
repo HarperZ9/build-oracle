@@ -7,7 +7,7 @@ latest release on the default branch is supported for fixes.
 
 ## Reporting a vulnerability
 
-Report suspected vulnerabilities privately via GitHub Security Advisories —
+Report suspected vulnerabilities privately via GitHub Security Advisories:
 the "Security" tab of this repository, then "Report a vulnerability". Do NOT
 open a public issue for an unfixed vulnerability.
 
@@ -28,8 +28,8 @@ small by design:
   CLI `--data` file loading read from disk. Treat untrusted model or data
   files as untrusted input: malformed files should raise, not corrupt state
   or execute code.
-- **Forecasts are estimates, not guarantees.** Every model in this library —
-  ARIMA, VAR, Prophet-style, neural, ensemble — produces a statistical
+- **Forecasts are estimates, not guarantees.** Every model in this library
+  (ARIMA, VAR, Prophet-style, neural, ensemble) produces a statistical
   estimate conditioned on the input series and its assumptions. Nothing in
   this library asserts a forecast is correct, and no output should be
   treated as a safety- or financial-critical guarantee without independent

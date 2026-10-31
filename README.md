@@ -22,12 +22,12 @@ Time series forecasting and anomaly detection toolkit.
 
 ## Features
 
-- **ARIMA** — Auto-regressive integrated moving average with automatic order selection
-- **Prophet-style** — Exponential smoothing with trend, seasonality, and holiday decomposition
-- **Neural Networks** — Feedforward and recurrent architectures for non-linear forecasting
-- **Changepoint Detection** — BIC/AIC penalty-based structural break identification
-- **Decomposition** — Seasonal-trend decomposition (STL-style) with configurable period
-- **Feature Engineering** — Lag features, rolling statistics, Fourier terms
+- **ARIMA**: Auto-regressive integrated moving average with automatic order selection
+- **Prophet-style**: Exponential smoothing with trend, seasonality, and holiday decomposition
+- **Neural Networks**: Feedforward and recurrent architectures for non-linear forecasting
+- **Changepoint Detection**: BIC/AIC penalty-based structural break identification
+- **Decomposition**: Seasonal-trend decomposition (STL-style) with configurable period
+- **Feature Engineering**: Lag features, rolling statistics, Fourier terms
 
 ## Installation
 
