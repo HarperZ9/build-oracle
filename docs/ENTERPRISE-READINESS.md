@@ -32,7 +32,7 @@ depend on.
 ## Reproducibility and provenance
 
 - Fitting and prediction are deterministic functions of their inputs (and,
-  where randomness is used — e.g. neural weight initialization — an explicit
+  where randomness is used, such as neural weight initialization, an explicit
   seed), which makes results reproducible and diffable across runs and
   machines.
 - Saved model artifacts (`--save` / `--load` in the `forecast` command) are
@@ -51,7 +51,7 @@ depend on.
 
 ## Quality gates
 
-- `ruff check .` (style), `mypy` (types — the numeric core is type-clean; the
+- `ruff check .` (style), `mypy` (types: the numeric core is type-clean; the
   GUI adapter is boundary-typed per the overrides in `pyproject.toml`), and
   `pytest` run in CI on every push and pull request.
 
@@ -63,7 +63,7 @@ depend on.
   guarantee of future behavior; validate against a holdout set with the
   metrics in `metrics.py` before relying on a forecast.
 - Changepoint detection and decomposition are diagnostic tools, not causal
-  explanations — a detected changepoint marks a statistical shift in mean,
+  explanations: a detected changepoint marks a statistical shift in mean,
   not a confirmed real-world event.
 - The optional pandas/scikit-learn/matplotlib/GUI layers inherit the
   maturity and advisories of those packages; the guarantees above describe

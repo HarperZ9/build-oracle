@@ -11,23 +11,23 @@ thin CLI and an optional GUI.
 
 ```
 build_oracle/
-  arima.py          ARIMA model — Yule-Walker/Levinson-Durbin AR fitting, residual-based MA
+  arima.py          ARIMA model: Yule-Walker/Levinson-Durbin AR fitting, residual-based MA
                      estimation, auto_arima grid search
-  var.py            VAR(p) — vector autoregression for multivariate series, OLS on the
+  var.py            VAR(p): vector autoregression for multivariate series, OLS on the
                      stacked lag matrix
-  prophet.py         Prophet-style additive model — piecewise-linear trend with automatic
+  prophet.py         Prophet-style additive model: piecewise-linear trend with automatic
                      changepoints + Fourier-series seasonality
   neural.py          NumPy-only neural network layers (Linear, LayerNorm, ReLU/Sigmoid/Tanh,
                      LSTMCell) and a lightweight MLP forecaster (SimpleForecaster)
-  ensemble.py        EnsembleForecaster — dynamic multi-model combination (ARIMA + Prophet +
+  ensemble.py        EnsembleForecaster: dynamic multi-model combination (ARIMA + Prophet +
                      Neural) with accuracy-based weighting
-  streaming.py       StreamForecaster — incremental forecast updates without a full refit
+  streaming.py       StreamForecaster: incremental forecast updates without a full refit
                      (per-model update strategies for ARIMA, Prophet, Neural, Ensemble)
   changepoint.py     PELT (Pruned Exact Linear Time) changepoint detection with BIC/AIC/mBIC
                      penalties
   decompose.py       Classical time-series decomposition (trend/seasonal/residual) via
                      centered moving averages and period averaging
-  features.py        Feature engineering — statistical, temporal, rolling, and lag features;
+  features.py        Feature engineering: statistical, temporal, rolling, and lag features;
                      differencing, log, and Box-Cox transforms
   metrics.py         Forecast evaluation metrics (MAE, MSE, RMSE, MAPE, SMAPE, MASE, R^2)
   autodiff.py        Forward-mode automatic differentiation via dual numbers (Dual class)
@@ -64,7 +64,7 @@ raw series (list / numpy array)
 
 Each module takes and returns numpy arrays (or small dataclasses wrapping
 them) in documented shapes, so modules compose without shared mutable state.
-`changepoint.py` and `decompose.py` are read-only diagnostics over a series —
+`changepoint.py` and `decompose.py` are read-only diagnostics over a series, and
 they do not feed back into model fitting automatically; callers wire that up
 explicitly (e.g. segmenting a series at a detected changepoint before
 fitting). The GUI and CLI are consumers of this core, never a dependency of
@@ -85,8 +85,8 @@ full history.
 
 ## Design decisions
 
-- **numpy/scipy core.** Everything needed for the forecasting math —
-  autoregression, Fourier features, changepoint search, evaluation metrics —
+- **numpy/scipy core.** Everything needed for the forecasting math
+  (autoregression, Fourier features, changepoint search, evaluation metrics)
   is expressed with numpy and scipy. pandas, scikit-learn, matplotlib, and
   PyQt6 are optional and isolated behind extras so the core stays installable
   and importable anywhere.

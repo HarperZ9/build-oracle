@@ -1,4 +1,4 @@
-# Build Oracle — Usage Guide
+# Build Oracle Usage Guide
 
 Build Oracle is a Python time-series forecasting library with a
 command-line interface (`build-oracle`) and an optional PyQt6 GUI. This
@@ -214,5 +214,5 @@ Settings page (see `build_oracle/gui/pages/`).
 
 ## See also
 
-- `README.md` — project overview and feature list.
-- `ARCHITECTURE.md` — module layout and data flow.
+- `README.md`: project overview and feature list.
+- `ARCHITECTURE.md`: module layout and data flow.

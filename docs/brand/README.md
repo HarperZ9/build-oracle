@@ -17,10 +17,10 @@ The record below describes the previous brand render and stays as it was written
 
 ## Previous render
 
-- `build-oracle-mark.svg` — square logomark (observed series into a dashed
+- `build-oracle-mark.svg`: square logomark (observed series into a dashed
   forecast continuation with a confidence band). Use for avatars, favicons,
   and small placements.
-- `build-oracle-hero.svg` — wide banner used at the top of the project
+- `build-oracle-hero.svg`: wide banner used at the top of the project
   README.
 
 Palette: the marks use the Project Telos indigo (`#4636e8`) with accent
